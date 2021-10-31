@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/edit_name_pop_up_menu"
+        android:title="@string/edit_name"></item>
+    <item
+        android:id="@+id/copy_pop_up_menu"
+        android:title="@string/copy"></item>
+    <item
+        android:id="@+id/delete_pop_up_menu"
+        android:title="@string/delete"></item>
+
+
+
+</menu>

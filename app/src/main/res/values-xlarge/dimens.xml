@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tittle_shopping_list_card">39sp</dimen>
+    <dimen name="number_shopping_list_card">37sp</dimen>
+    <dimen name="minimum_card_height_shopping_list_card">130dp</dimen>
+
+
+    <dimen name="minimum_card_height_list_activity">120dp</dimen>
+    <dimen name="tittle_list_activity_card">40sp</dimen>
+    <dimen name="tittle_margin_list_activity_card">10dp</dimen>
+    <dimen name="description_list_activity_card">30sp</dimen>
+    <dimen name="number_list_activity_card">45sp</dimen>
+    <dimen name="checkbox_scale_activity_card">2</dimen>
+    <dimen name="checkbox_margin_activity_card">20dp</dimen>
+    <dimen name="image_width_activity_card">100dp</dimen>
+    <dimen name="button_margin_right_activity_card">60dp</dimen>
+    <dimen name="button_margin_bottom_activity_card">25dp</dimen>
+    <dimen name="button_scale_activity_card">1.5</dimen>
+    <dimen name="small_buttons_margin_activity_card">60dp</dimen>
+    <dimen name="edit_text_size_edit_activity">29dp</dimen>
+    <dimen name="card_height_category_card">110dp</dimen>
+    <dimen name="text_size_category_card">35sp</dimen>
+    <dimen name="edit_text_size_add_friend_activity">25dp</dimen>
+    <dimen name="divider_margin_add_friend_activity">20dp</dimen>
+    <dimen name="divider_height_add_friend_activity">3dp</dimen>
+    <dimen name="number_group_card">35sp</dimen>
+
+
+
+
+
+
+</resources>

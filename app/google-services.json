@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "933470341619",
+    "firebase_url": "https://shopisto-1de6d-default-rtdb.firebaseio.com",
+    "project_id": "shopisto-1de6d",
+    "storage_bucket": "shopisto-1de6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933470341619:android:d24b44c945a4c5cafeea86",
+        "android_client_info": {
+          "package_name": "com.pawlowski.shopisto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "933470341619-c8j7qvhcqvcgq0pa19fl3usl2j61a558.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pawlowski.shopisto",
+            "certificate_hash": "d18b92a5ef32b8ba33d356eb93945953c04fcc50"
+          }
+        },
+        {
+          "client_id": "933470341619-jd2jbhm3ml3cfmqder0fc8iijhln5tb1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ5EFJKr5ryohHuK1n2i2Rokk4INS_4PE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "933470341619-jd2jbhm3ml3cfmqder0fc8iijhln5tb1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-6726961092828838~1552511084"
+    }
+  ],
+  "configuration_version": "1"
+}

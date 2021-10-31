@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">Shopisto</string>
+    <string name="login">Login</string>
+    <string name="email">E-mail</string>
+    <string name="password">Password</string>
+    <string name="Log_in">Log in</string>
+    <string name="i_dont_remember"><u>Reset password</u></string>
+    <string name="dont_have_account">You don\'t have account? <u>Create an account</u>!</string>
+    <string name="register_button">Register</string>
+    <string name="register">Registration</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="reset_password">Reset password</string>
+    <string name="reset">Send e-mail</string>
+    <string name="first_fill_email_and_password">Incorrect e-mail or password</string>
+    <string name="short_mail">Too short e-mail!</string>
+    <string name="short_password">Password should contain minimum 6 characters!</string>
+    <string name="different_passwords">Passwords are not equal!</string>
+    <string name="account_created">Account was successfully created!</string>
+    <string name="sign_in_success">Successfully logged in!</string>
+    <string name="please_wait">Please wait</string>
+    <string name="account_not_created">Something went wrong. Account wasn\'t created</string>
+    <string name="wrong_sign_in">Something went wrong. Login failed </string>
+    <string name="email_sent">For your e-mail account was sent a link with resetting password action</string>
+    <string name="email_sending_failure">Something went wrong. E-mail wasn\'t sent</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="first_put_tittle">First enter the name of the list!</string>
+    <string name="first_put_group_tittle">First enter the template tittle!</string>
+    <string name="first_put_product_tittle">First enter the product tittle!</string>
+    <string name="first_put_product_number">First enter the number of products!</string>
+    <string name="first_choose_some_products">First choose some products!</string>
+    <string name="edit_name">Change tittle</string>
+    <string name="delete">Delete</string>
+    <string name="copy">Copy</string>
+    <string name="list_deleted">List has been deleted</string>
+    <string name="group_deleted">Template has been deleted</string>
+    <string name="product_deleted">Product has been deleted</string>
+    <string name="products_deleted_1">Deleted</string>
+    <string name="products_deleted_2">products</string>
+    <string name="undo">Undo</string>
+    <string name="tittle">Tittle</string>
+    <string name="description">Description</string>
+    <string name="number">Amount</string>
+    <string name="category">Category</string>
+    <string name="short_tittle">Too short tittle!</string>
+
+
+    <string name="others">Others</string>
+    <string name="bakery">Baking</string>
+    <string name="conserves">Conserves</string>
+    <string name="frozen">Frozen articles</string>
+    <string name="meat">Meat</string>
+    <string name="alcohols">Alcohols</string>
+    <string name="pastas">Pasta and rice products</string>
+    <string name="sauces">Sauces and ingredients</string>
+    <string name="sweets">Sweets</string>
+    <string name="electronics">Electronics</string>
+    <string name="clothes">Clothes</string>
+    <string name="fruits_and_vegetables">Fruits and vegetables</string>
+    <string name="ready_meals">Ready meals</string>
+    <string name="dairy">Dairy</string>
+    <string name="drinks">Drinks</string>
+    <string name="cereals">Cereals</string>
+
+
+    <string name="list_has_been_succesfully_restored">List has been successfully restored with name: </string>
+    <string name="group_has_been_succesfully_restored">Template has been successfully restored with name: </string>
+
+    <string name="list_has_been_deleted_1">List named</string>
+    <string name="list_has_been_deleted_2">has been deleted</string>
+
+    <string name="group_has_been_deleted_1">Template named</string>
+    <string name="group_has_been_deleted_2">has been deleted</string>
+
+    <string name="start_creating_lists">Start creating lists!</string>
+    <string name="you_dont_have_anything_in_your_trash">You haven\'t got anything in trash!</string>
+    <string name="help">Help</string>
+    <string name="shopping_lists">Shopping lists</string>
+    <string name="product_groups">Lists templates</string>
+    <string name="settings">Settings</string>
+    <string name="sign_out">Sign out</string>
+    <string name="trash">Trash</string>
+
+    <string name="create_list">Create a list</string>
+    <string name="create_group">Create list template</string>
+
+    <string name="share_list">Share list</string>
+    <string name="add_from_group">Add from template</string>
+
+    <string name="start_adding_products">Start adding products!</string>
+
+    <string name="find_friend">Find friend</string>
+    <string name="no_users_found">No Shopisto users found with this e-mail! If you want to send the list to the user who hasn\'t got Shopisto app, you can send converted version <u>here</u>.</string>
+
+    <string name="invalid_mail">Incorrect e-mail</string>
+
+    <string name="error_with_connection">Error with connection with server has happened. Searching friend failed</string>
+
+    <string name="you_cant_add_yourself_to_friend">You can\'t add yourself to friends!</string>
+    <string name="friend_succesfully_added">User was successfully added to friends!</string>
+
+    <string name="share_friends_from_shopisto">Share to Shopisto users:</string>
+    <string name="another_list_users">Another list users:</string>
+
+    <string name="share_via_selected_app">Send list via selected app</string>
+
+    <string name="enter_friend_email">Enter friend e-mail</string>
+
+    <string name="start_creating_list_templates">Start creating list templates!</string>
+
+    <string name="general">General</string>
+
+    <string name="add_product">Add product</string>
+
+    <string name="xx_products">products</string>
+
+    <string name="you_were_probably_deleted_from_list">You were probably deleted from list</string>
+
+    <string name="template_tittle">Template name</string>
+
+    <string name="choose_products">Choose products</string>
+
+    <string name="_copy">- copy</string>
+
+    <string name="no_products_in_chosen_template">There are no products in this template!</string>
+    <string name="user_already_your_friend">This user is already your friend!</string>
+
+    <string name="choose_group">Choose group</string>
+
+    <string name="share_using">Share using</string>
+
+    <string name="list_name">Shopping list tittle</string>
+
+    <string name="create">Create</string>
+
+    <string name="stationary">Stationary</string>
+
+    <string name="login_failed">Login failed</string>
+    <string name="mail_already_in_use">This e-mail address is already in use by authentication with password! If you don\'t remember your password, click \'Reset password\'</string>
+
+    <string name="not_logged_in">You are in offline mode. <u>Sign in</u>!</string>
+
+    <string name="start_in_offline">Or <u>start using the app without creating an account</u> (but you won\'t be able to share lists with friends)!</string>
+
+    <string name="login_before_sharing">To share lists with friends you have to be signed in!</string>
+
+    <string name="by_continuing_you_agree_privacy">By continuing, you agree our <u>privacy policy</u>.</string>
+
+    <string name="my_default_web_client_id">933470341619-c8j7qvhcqvcgq0pa19fl3usl2j61a558.apps.googleusercontent.com</string>
+
+    <string name="lists">Lists</string>
+    <string name="templates">Templates</string>
+
+
+
+
+
+</resources>

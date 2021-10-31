@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shopisto</string>
+    <string name="login">Logowanie</string>
+    <string name="email">E - mail</string>
+    <string name="password">Hasło</string>
+    <string name="Log_in">Zaloguj się</string>
+    <string name="i_dont_remember"><u>Resetuj hasło</u></string>
+    <string name="dont_have_account">Nie masz konta? <u>Utwórz konto</u>!</string>
+    <string name="register_button">Zarejestruj się</string>
+    <string name="register">Rejestracja</string>
+    <string name="repeat_password">Powtórz hasło</string>
+    <string name="reset_password">Resetuj hasło</string>
+    <string name="reset">Wyślij e-maila</string>
+    <string name="first_fill_email_and_password">Nieprawidłowy email lub hasło</string>
+    <string name="short_mail">Zbyt krótki email</string>
+    <string name="short_password">Hasło powinno zawierać conajmniej 6 znaków!</string>
+    <string name="different_passwords">Hasła nie są takie same!</string>
+    <string name="account_created">Konto zostało pomyślnie utworzone!</string>
+    <string name="sign_in_success">Zalogowano pomyślnie!</string>
+    <string name="please_wait">Proszę czekać</string>
+    <string name="account_not_created">Coś poszło nie tak. Konto nie zostało utworzone.</string>
+    <string name="wrong_sign_in">Coś poszło nie tak. Nie udało się zalogować</string>
+    <string name="email_sent">Na twoją pocztę został wysłany mail z opcją resetowania hasła.</string>
+    <string name="email_sending_failure">Coś poszło nie tak. Mail nie został wysłany</string>
+
+    <string name="open">Otwórz</string>
+    <string name="close">Zamknij</string>
+    <string name="first_put_tittle">Najpierw podaj nazwę listy!</string>
+    <string name="first_put_group_tittle">Najpierw podaj nazwę szablonu!</string>
+    <string name="first_put_product_tittle">Najpierw podaj nazwę produktu!</string>
+    <string name="first_put_product_number">Najpierw podaj ilość!</string>
+    <string name="first_choose_some_products">Najpierw wybierz jakieś produkty!</string>
+    <string name="edit_name">Zmień nazwę</string>
+    <string name="delete">Usuń</string>
+    <string name="copy">Kopiuj</string>
+    <string name="list_deleted">Usunięto listę</string>
+    <string name="group_deleted">Usunięto szablon listy</string>
+    <string name="product_deleted">Usunięto produkt</string>
+    <string name="products_deleted_1">Usunięto</string>
+    <string name="products_deleted_2">produktów</string>
+    <string name="undo">Przywróć</string>
+    <string name="tittle">Tytuł</string>
+    <string name="description">Opis</string>
+    <string name="number">Ilość</string>
+    <string name="category">Kategoria</string>
+    <string name="short_tittle">Zbyt krótki tytuł!</string>
+
+
+    <string name="others">Inne</string>
+    <string name="bakery">Pieczywo</string>
+    <string name="conserves">Konserwy</string>
+    <string name="frozen">Artykuły mrożone</string>
+    <string name="meat">Mięso</string>
+    <string name="alcohols">Alkohole</string>
+    <string name="pastas">Makarony i produkty ryżowe</string>
+    <string name="sauces">Sosy i przyprawy</string>
+    <string name="sweets">Słodycze</string>
+    <string name="electronics">Elektronika</string>
+    <string name="clothes">Ubrania</string>
+    <string name="fruits_and_vegetables">Owoce i warzywa</string>
+    <string name="ready_meals">Gotowe posiłki</string>
+    <string name="dairy">Nabiał</string>
+    <string name="drinks">Napoje</string>
+    <string name="cereals">Płatki śniadaniowe</string>
+
+
+    <string name="list_has_been_succesfully_restored">Przywrócono pomyślnie listę o nazwie</string>
+    <string name="group_has_been_succesfully_restored">Przywrócono pomyślnie szablon o nazwie</string>
+
+    <string name="list_has_been_deleted_1">Lista o nazwie</string>
+    <string name="list_has_been_deleted_2">została usunięta</string>
+
+    <string name="group_has_been_deleted_1">Szablon o nazwie</string>
+    <string name="group_has_been_deleted_2">został usunięty</string>
+
+    <string name="start_creating_lists">Zacznij tworzyć listy!</string>
+    <string name="you_dont_have_anything_in_your_trash">Nie masz nic w koszu!</string>
+    <string name="help">Pomoc</string>
+    <string name="shopping_lists">Listy zakupów</string>
+    <string name="product_groups">Szablony list</string>
+    <string name="settings">Ustawienia</string>
+    <string name="sign_out">Wyloguj się</string>
+    <string name="trash">Kosz</string>
+
+    <string name="create_list">Stwórz listę</string>
+    <string name="create_group">Stwórz szablon listy</string>
+
+    <string name="share_list">Udostępnij listę</string>
+    <string name="add_from_group">Dodaj grupowo</string>
+
+    <string name="start_adding_products">Zacznij dodawać produkty!</string>
+
+    <string name="find_friend">Znajdź znajomego</string>
+    <string name="no_users_found">Nie znaleziono użytkowników Shopisto o podanym adresie! Jeśli chcesz udostępnić listę użytkownikowi, który nie ma aplikacji Shopisto, możesz <u>wysłać ją tekstowo</u>.</string>
+
+    <string name="invalid_mail">Nieprawidłowy e-mail</string>
+
+    <string name="error_with_connection">Wystąpił błąd w połączeniu z serwerem. Nie udało się wyszukać znajomego</string>
+
+    <string name="you_cant_add_yourself_to_friend">Nie możesz dodać siebie to znajomych!</string>
+    <string name="friend_succesfully_added">Dodano pomyślnie użytkownika do znajomych!</string>
+
+    <string name="share_friends_from_shopisto">Udostępnij znajomym z Shopisto:</string>
+    <string name="another_list_users">Inni użytkownicy listy:</string>
+
+    <string name="share_via_selected_app">Wyślij listę przez wybraną aplikację</string>
+
+    <string name="enter_friend_email">Podaj e-mail znajomego</string>
+
+    <string name="start_creating_list_templates">Zacznij tworzyć szablony list!</string>
+
+    <string name="general">Ogólne</string>
+
+    <string name="add_product">Dodaj produkt</string>
+
+    <string name="xx_products">produktów</string>
+
+    <string name="you_were_probably_deleted_from_list">Prawdopodobnie usunięto cię z listy</string>
+
+    <string name="template_tittle">Nazwa szablonu</string>
+    <string name="choose_products">Wybierz produkty</string>
+
+    <string name="_copy">- kopia</string>
+
+    <string name="no_products_in_chosen_template">W wybranym szablonie nie ma produktów!</string>
+
+    <string name="user_already_your_friend">Ten użytkownik jest już twoim znajomym!</string>
+
+    <string name="choose_group">Wybierz grupę</string>
+
+    <string name="share_using">Udostępnij przez</string>
+
+    <string name="list_name">Nazwa listy zakupów</string>
+
+    <string name="create">Stwórz</string>
+
+    <string name="stationary">Artykuły papiernicze</string>
+
+    <string name="login_failed">Nie udało się zalogować</string>
+    <string name="mail_already_in_use">Ten adres e-mail jest już w użyciu w logowaniu z hasłem! Jeśli nie pamiętasz hasła, kliknij "Resetuj hasło"</string>
+
+    <string name="not_logged_in">Jesteś w trybie offline. <u>Zaloguj się</u>!</string>
+
+    <string name="start_in_offline">Lub <u>zacznij korzystać z aplikacji bez tworzenia konta</u> (ale nie będziesz mieć wtedy możliwości udostępniania listy znajomym)!</string>
+
+    <string name="login_before_sharing">Żeby udostępniać listy znajomym, musisz się najpierw zalogować!</string>
+
+    <string name="by_continuing_you_agree_privacy">Kontynuując, akceptujesz naszą <u>politykę prywatności</u>.</string>
+
+    <string name="my_default_web_client_id">933470341619-c8j7qvhcqvcgq0pa19fl3usl2j61a558.apps.googleusercontent.com</string>
+
+    <string name="lists">Listy</string>
+    <string name="templates">Szablony</string>
+
+
+
+
+
+</resources>

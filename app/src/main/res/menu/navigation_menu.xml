@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/shopping_lists_menu"
+            android:icon="@drawable/shopping"
+            android:title="@string/shopping_lists" />
+        <item
+            android:id="@+id/products_menu"
+            android:icon="@drawable/templates_icon"
+            android:title="@string/product_groups" />
+        <item
+            android:id="@+id/restore_menu"
+            android:icon="@drawable/restore_icon"
+            android:title="@string/trash" />
+
+    </group>
+    <item android:title=""
+        >
+        <menu>
+            <item
+                android:id="@+id/settings_menu"
+                android:icon="@drawable/settings_icon"
+                android:title="@string/settings"
+                android:visible="false" />
+            <item
+                android:id="@+id/help_navigation_menu"
+                android:icon="@drawable/help_icon"
+                android:title="@string/help"
+                android:visible="false" />
+            <item
+                android:id="@+id/log_out_menu"
+                android:icon="@drawable/sign_out_icon"
+                android:title="@string/sign_out" />
+        </menu>
+    </item>
+
+
+</menu>
