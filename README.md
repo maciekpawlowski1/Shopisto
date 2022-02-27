@@ -1,4 +1,4 @@
-# Track_Your_Activity
+# Shopisto
 
 ## Used language:
 * Java
