@@ -1,4 +1,5 @@
 # Shopisto
+<img src="/app/src/main/logo_shopisto-playstore.png" alt="shopisto logo" width="150"/>
 
 ## Used language:
 * Java
