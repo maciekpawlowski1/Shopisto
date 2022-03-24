@@ -1,28 +1,22 @@
-package com.pawlowski.shopisto.account;
+package com.pawlowski.shopisto.account.register_activity;
 
 import androidx.annotation.NonNull;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.AddFriendActivity;
 import com.pawlowski.shopisto.BaseActivity;
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.account.privacy_policy_activity.PrivacyPolicyActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
-import com.pawlowski.shopisto.main.MainActivity;
 
 public class RegisterActivity extends BaseActivity implements RegisterViewMvc.RegisterButtonsClickListener {
 

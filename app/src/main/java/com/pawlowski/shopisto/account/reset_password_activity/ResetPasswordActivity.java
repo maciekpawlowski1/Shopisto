@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto.account;
+package com.pawlowski.shopisto.account.reset_password_activity;
 
 import androidx.annotation.NonNull;
 
@@ -15,48 +15,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.pawlowski.shopisto.BaseActivity;
 import com.pawlowski.shopisto.R;
 
-public class ResetPasswordActivity extends BaseActivity {
+public class ResetPasswordActivity extends BaseActivity implements ResetPasswordViewMvc.ResetPasswordButtonsClickListener {
 
-    ImageButton backButton;
-    Button resetButton;
-    TextInputEditText mailInput;
-    CountDownTimer backTimer;
+    private ResetPasswordViewMvc viewMvc;
+    private CountDownTimer backTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reset_password);
-        backButton = findViewById(R.id.back_button_reset);
-        resetButton = findViewById(R.id.reset_button_reset);
-        mailInput = findViewById(R.id.email_input_reset);
+        viewMvc = new ResetPasswordViewMvc(getLayoutInflater(), null);
+        viewMvc.registerListener(this);
+        setContentView(viewMvc.getRootView());
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mail = mailInput.getText().toString();
-                if(mail.length() >= 3)
-                {
-                    sendResetMail(mail);
-                }
-                else
-                {
-                    showErrorSnackbar(getString(R.string.short_mail), true);
-                }
-            }
-        });
     }
 
     void sendResetMail(String userMail)
     {
         String mail = userMail.trim();
-        resetButton.setClickable(false);
+        viewMvc.changeClickableOfResetButton(false);
         showProgressDialog(getString(R.string.please_wait));
         FirebaseAuth.getInstance().sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -83,7 +59,7 @@ public class ResetPasswordActivity extends BaseActivity {
             public void onFailure(@NonNull Exception e) {
                 hideProgressDialog();
                 showErrorSnackbar(getString(R.string.email_sending_failure), true);
-                resetButton.setClickable(true);
+                viewMvc.changeClickableOfResetButton(true);
             }
         });
     }
@@ -93,5 +69,23 @@ public class ResetPasswordActivity extends BaseActivity {
         super.onStop();
         if(backTimer != null)
             backTimer.cancel();
+    }
+
+    @Override
+    public void onBackClick() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onResetButtonClick() {
+        String mail = viewMvc.getMailInputText();
+        if(mail.length() >= 3)
+        {
+            sendResetMail(mail);
+        }
+        else
+        {
+            showErrorSnackbar(getString(R.string.short_mail), true);
+        }
     }
 }

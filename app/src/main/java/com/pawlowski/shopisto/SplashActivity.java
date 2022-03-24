@@ -1,7 +1,5 @@
 package com.pawlowski.shopisto;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +13,7 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.account.LoginActivity;
+import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.main.MainActivity;
 
 public class SplashActivity extends BaseActivity {

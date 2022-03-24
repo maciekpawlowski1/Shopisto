@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,16 +21,13 @@ import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.BaseActivity;
 import com.pawlowski.shopisto.HelpActivity;
 import com.pawlowski.shopisto.MyFragmentHolder;
 import com.pawlowski.shopisto.R;
-import com.pawlowski.shopisto.account.LoginActivity;
+import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 
 import java.util.Calendar;

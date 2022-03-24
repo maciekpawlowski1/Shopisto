@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto.account;
+package com.pawlowski.shopisto.account.login_activity;
 
 import android.text.Editable;
 import android.view.LayoutInflater;

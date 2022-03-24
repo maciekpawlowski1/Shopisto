@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto.account;
+package com.pawlowski.shopisto.account.privacy_policy_activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

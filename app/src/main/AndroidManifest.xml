@@ -10,9 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MojaListaZakupów">
         <activity
-            android:name=".account.PrivacyPolicyActivity"
+            android:name=".account.privacy_policy_activity.PrivacyPolicyActivity"
             android:exported="true"
-            android:parentActivityName=".account.RegisterActivity"/>
+            android:parentActivityName=".account.register_activity.RegisterActivity"/>
 
         <activity
             android:name=".AddFriendActivity"
@@ -74,15 +74,15 @@
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".account.ResetPasswordActivity"
+            android:name=".account.reset_password_activity.ResetPasswordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Logowanie" />
         <activity
-            android:name=".account.RegisterActivity"
+            android:name=".account.register_activity.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Logowanie" />
         <activity
-            android:name=".account.LoginActivity"
+            android:name=".account.login_activity.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Logowanie" />
         <activity
