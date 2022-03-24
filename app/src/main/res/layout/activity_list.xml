@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/card_backgroubd_color2"
-    tools:context=".ListActivity">
+    tools:context=".list_activity.ListActivity">
 
 
 

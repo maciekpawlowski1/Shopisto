@@ -1,6 +1,5 @@
 package com.pawlowski.shopisto.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.BaseActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.ChooseGroupActivity;
 import com.pawlowski.shopisto.ChooseProductsFromGroupActivity;
 import com.pawlowski.shopisto.GroupActivity;

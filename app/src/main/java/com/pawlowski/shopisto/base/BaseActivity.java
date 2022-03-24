@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto;
+package com.pawlowski.shopisto.base;
 
 import android.app.Dialog;
 import android.content.SharedPreferences;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.pawlowski.shopisto.R;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,7 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState, persistentState);
     }
 
-    Dialog progresDialog;
+    private Dialog progressDialog;
 
     public void showErrorSnackbar(String text, boolean error)
     {
@@ -40,19 +41,19 @@ public class BaseActivity extends AppCompatActivity {
 
     public void showProgressDialog(String text)
     {
-        progresDialog = new Dialog(this);
-        progresDialog.setContentView(R.layout.progress_dialog_layout);
-        ((TextView)progresDialog.findViewById(R.id.progressText)).setText(text);
-        progresDialog.setCancelable(false);
-        progresDialog.setCanceledOnTouchOutside(false);
-        progresDialog.show();
+        progressDialog = new Dialog(this);
+        progressDialog.setContentView(R.layout.progress_dialog_layout);
+        ((TextView) progressDialog.findViewById(R.id.progressText)).setText(text);
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
     }
 
     public void hideProgressDialog()
     {
-        if(progresDialog != null)
+        if(progressDialog != null)
         {
-            progresDialog.dismiss();
+            progressDialog.dismiss();
         }
     }
 

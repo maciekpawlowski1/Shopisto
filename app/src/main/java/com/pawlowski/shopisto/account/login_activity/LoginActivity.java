@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.AddFriendActivity;
-import com.pawlowski.shopisto.BaseActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.account.register_activity.RegisterActivity;
 import com.pawlowski.shopisto.account.reset_password_activity.ResetPasswordActivity;
 import com.pawlowski.shopisto.database.DBHandler;

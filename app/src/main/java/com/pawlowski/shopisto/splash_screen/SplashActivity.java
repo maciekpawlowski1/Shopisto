@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto;
+package com.pawlowski.shopisto.splash_screen;
 
 import android.content.Intent;
 import android.os.Build;
@@ -13,14 +13,16 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.account.login_activity.LoginActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.main.MainActivity;
 
 public class SplashActivity extends BaseActivity {
 
-    ImageView logoImage;
-    TextView appNameTextView;
-    CountDownTimer countDownTimer;
+    private ImageView logoImage;
+    private TextView appNameTextView;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

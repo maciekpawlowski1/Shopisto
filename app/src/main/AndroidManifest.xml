@@ -21,7 +21,7 @@
             android:theme="@style/AppBarTheme2" />
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".splash_screen.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -32,7 +32,7 @@
         </activity>
         <activity
             android:name=".ShareActivity"
-            android:parentActivityName=".ListActivity"
+            android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".HelpActivity"
@@ -40,11 +40,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ChooseProductsFromGroupActivity"
-            android:parentActivityName=".ListActivity"
+            android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ChooseGroupActivity"
-            android:parentActivityName=".ListActivity"
+            android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme" />
         <activity
@@ -65,7 +65,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ListActivity"
+            android:name=".list_activity.ListActivity"
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme" />

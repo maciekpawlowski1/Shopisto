@@ -1,9 +1,4 @@
-package com.pawlowski.shopisto;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+package com.pawlowski.shopisto.list_activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,24 +9,23 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pawlowski.shopisto.AddProductsToListActivity;
+import com.pawlowski.shopisto.ChooseGroupActivity;
+import com.pawlowski.shopisto.EditProductActivity;
+import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.ShareActivity;
 import com.pawlowski.shopisto.account.login_activity.LoginActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.ProductModel;
@@ -43,234 +37,61 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ListActivity extends BaseActivity {
+import androidx.annotation.NonNull;
 
-    FloatingActionButton addButton;
-    FloatingActionButton addGroupButton;
-    FloatingActionButton addProductsButton;
-    LinearLayout linearButtonLayout;
-    ListAdapter adapter;
-    RecyclerView recyclerView;
-    int listId;
-    boolean amIOwner;
-    TextView textEmptyList;
-    String listTittle;
-    ImageView imageEmptyList;
-    //ArrayList<ProductModel> products = new ArrayList<>();
-    MenuItem editProductItem;
-    MenuItem deleteProductItem;
-    MenuItem shareProductItem;
-    MenuItem addFromGroupItem;
-    String listKey;
-    boolean justCreated;
-    List<FriendModel>friendsFromList = new ArrayList<>();
-    boolean buttonsVisibility = false;
+public class ListActivity extends BaseActivity implements ListActivityViewMvc.ListActivityButtonsClickListener {
 
-    ValueEventListener productsListener;
-    ValueEventListener friendsListener;
 
-    SwipeRefreshLayout swipeRefreshLayout;
+    private int listId;
+    private ListAdapter adapter;
+    private String listTittle;
+    private MenuItem editProductItem;
+    private MenuItem deleteProductItem;
+    private MenuItem shareProductItem;
+    private MenuItem addFromGroupItem;
+    private String listKey;
+    private boolean justCreated;
+    private List<FriendModel>friendsFromList = new ArrayList<>();
+
+    private ValueEventListener productsListener;
+    private ValueEventListener friendsListener;
 
     final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 60;
-
-    AdView mAdView;
 
     CountDownTimer downloadTimer;
     CountDownTimer stoppingTimer;
     boolean changingActivity = false;
 
-    boolean isOfflineMode = false;
     //boolean isCheckingForUpdates = false;
 
-
-
-
-
-
+    private ListActivityViewMvc viewMvc;
     //Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        viewMvc = new ListActivityViewMvc(getLayoutInflater(), null);
 
-        //Log.d("onCreate", "onCreate method starts");
+        setContentView(viewMvc.getRootView());
 
         Bundle bundle = getIntent().getExtras();
         listId = bundle.getInt("listId");
         listTittle = bundle.getString("listTittle", " ");
         listKey = bundle.getString("listKey");
         justCreated = bundle.getBoolean("justCreated", false);
-        amIOwner = bundle.getBoolean("amIOwner");
+        boolean amIOwner = bundle.getBoolean("amIOwner");
 
         //Log.d("onCreate listKey", listKey);
         /*toolbar = findViewById(R.id.toolbar_list);
         setSupportActionBar(toolbar);*/
         getSupportActionBar().setTitle(listTittle);
         //getSupportActionBar().setHomeButtonEnabled(true);
-        addButton = findViewById(R.id.add_button_list);
-        addGroupButton = findViewById(R.id.add_group_button_list);
-        addProductsButton = findViewById(R.id.add_products_button_list);
-        linearButtonLayout = findViewById(R.id.linear_layout_buttons_list);
 
-
-        swipeRefreshLayout = findViewById(R.id.refresh_layout_list_activity);
-
-
-        recyclerView = findViewById(R.id.recycler_list);
-
-        isOfflineMode = isOfflineModeOn();
-
-
-        addButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if(adapter.isSomethingSelected())
-                    adapter.unselectAllProducts();
-
-                if(buttonsVisibility == false)
-                {
-                    showButtons();
-                }
-                else
-                {
-                    hideButtons();
-                }
-
-                return true;
-            }
-        });
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(adapter.isSomethingSelected())
-                    adapter.unselectAllProducts();
-
-
-                if(!buttonsVisibility)
-                {
-                    Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
-                    i.putExtra("listId", listId);
-                    i.putExtra("listKey", listKey);
-                    startActivity(i);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                }
-                else
-                {
-                    hideButtons();
-                }
-
-
-            }
-        });
-
-
-
-        addProductsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(adapter.isSomethingSelected())
-                    adapter.unselectAllProducts();
-
-                Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
-                i.putExtra("listId", listId);
-                i.putExtra("listKey", listKey);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-            }
-        });
-
-        addGroupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(adapter.isSomethingSelected())
-                    adapter.unselectAllProducts();
-
-                Intent i = new Intent(ListActivity.this, ChooseGroupActivity.class);
-                i.putExtra("listId", listId);
-                i.putExtra("listKey", listKey);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-
-            }
-        });
-
-
-
+        boolean isOfflineMode = isOfflineModeOn();
 
         adapter = new ListAdapter(this, listId, listKey, isOfflineMode);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.setAdapter(adapter);
+        viewMvc.setRecyclerAdapter(adapter);
 
-        textEmptyList = findViewById(R.id.text_empty_list);
-        imageEmptyList = findViewById(R.id.image_view_empty_list);
-
-        textEmptyList.setVisibility(View.GONE);
-        imageEmptyList.setVisibility(View.GONE);
-
-
-        imageEmptyList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
-                i.putExtra("listId", listId);
-                i.putExtra("listKey", listKey);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(!isOfflineModeOn())//!amIOwner || (friendsFromList.size() != 0))
-                {
-                    FirebaseDatabase.getInstance().goOnline();
-                    resetTimersAndStartStop();
-                    if(!canIDownload())
-                    {
-                        Log.d("CanIDownload", "You have to wait");
-
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override public void run() {
-                                if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                                    swipeRefreshLayout.setRefreshing(false);
-                            }
-                        }, 500);
-
-                    }
-                    else
-                    {
-
-                        Log.d("CanIDownload", "You Can and downloaded");
-                        saveDownloadTime();
-
-                        checkingForUpdatesInASectionAction();
-
-                        if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                            swipeRefreshLayout.setRefreshing(false);
-                    }
-                }
-                else
-                {
-                    if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                        swipeRefreshLayout.setRefreshing(false);
-                }
-
-
-
-            }
-        });
-
-
-
-
-
+        viewMvc.hideEmptyListItems();
 
 
     }
@@ -278,7 +99,7 @@ public class ListActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
+        viewMvc.registerListener(this);
 
         downloadTimer = new CountDownTimer(120000, 120000) {
             @Override
@@ -328,9 +149,8 @@ public class ListActivity extends BaseActivity {
         loadProductsInAsyncTask();
         loadFriends();
 
-        mAdView = findViewById(R.id.ad_view_list_activity);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        viewMvc.loadAd(adRequest);
 
         if(!isOfflineModeOn())
         {
@@ -512,6 +332,7 @@ public class ListActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        viewMvc.unregisterListener(this);
         downloadTimer.cancel();
         stoppingTimer.cancel();
 
@@ -728,9 +549,8 @@ public class ListActivity extends BaseActivity {
         new AsyncTask<Void, Integer, Void>() {
 
             WeakReference<ListAdapter> adapter;
-            WeakReference<TextView> textEmpty;
-            WeakReference<ImageView> imageEmpty;
             WeakReference<ListActivity>activity;
+            WeakReference<ListActivityViewMvc>viewMvcWeak;
             ArrayList<ProductModel>products;
 
             @Override
@@ -738,8 +558,7 @@ public class ListActivity extends BaseActivity {
                 super.onPreExecute();
                 this.adapter = new WeakReference<>(ListActivity.this.adapter);
                 this.activity = new WeakReference<>(ListActivity.this);
-                this.textEmpty = new WeakReference<>(textEmptyList);
-                this.imageEmpty = new WeakReference<>(imageEmptyList);
+                this.viewMvcWeak = new WeakReference<>(viewMvc);
                 //if(!activity.get().isDestroyed())
                     //activity.get().showProgressDialog(getString(R.string.please_wait));
             }
@@ -756,13 +575,11 @@ public class ListActivity extends BaseActivity {
                 //activity.get().hideProgressDialog();
                 if(products.size() > 0)
                 {
-                    textEmpty.get().setVisibility(View.GONE);
-                    imageEmpty.get().setVisibility(View.GONE);
+                    viewMvcWeak.get().hideEmptyListItems();
                 }
                 else
                 {
-                    textEmpty.get().setVisibility(View.VISIBLE);
-                    imageEmpty.get().setVisibility(View.VISIBLE);
+                    viewMvcWeak.get().showEmptyListItems();
                 }
                 adapter.get().setProducts(products);
             }
@@ -777,14 +594,12 @@ public class ListActivity extends BaseActivity {
 
     public void showNoProductsImage()
     {
-        textEmptyList.setVisibility(View.VISIBLE);
-        imageEmptyList.setVisibility(View.VISIBLE);
+        viewMvc.showNoProductsImage();
     }
 
     public void hideNoProductsImage()
     {
-        textEmptyList.setVisibility(View.GONE);
-        imageEmptyList.setVisibility(View.GONE);
+        viewMvc.hideNoProductsImage();
     }
 
 
@@ -814,7 +629,7 @@ public class ListActivity extends BaseActivity {
                 //Delete product action
                 resetTimersAndStartStop();
                 FirebaseDatabase.getInstance().goOnline();
-                adapter.deleteSelectedProducts(recyclerView);
+                adapter.deleteSelectedProducts(viewMvc.getRootView());
                 //adapter.unselectAllProducts();
                 return true;
             }
@@ -913,21 +728,7 @@ public class ListActivity extends BaseActivity {
         }
     }
 
-    public void showButtons()
-    {
-        linearButtonLayout.setVisibility(View.VISIBLE);
-        linearButtonLayout.startAnimation(AnimationUtils.loadAnimation(this, R.anim.buttons_show_animation));
-        buttonsVisibility = true;
-        addButton.setImageResource(R.drawable.cancel_icon2);
-    }
 
-    public void hideButtons()
-    {
-        linearButtonLayout.startAnimation(AnimationUtils.loadAnimation(this, R.anim.buttons_hide_animation));
-        linearButtonLayout.setVisibility(View.GONE);
-        buttonsVisibility = false;
-        addButton.setImageResource(R.drawable.plus_icon);
-    }
 
     public void editAction(boolean fromActionBar, ProductModel selectedProductIfNotFromActionBar)
     {
@@ -976,4 +777,98 @@ public class ListActivity extends BaseActivity {
     }
 
 
+    @Override
+    public void onAddButtonClick() {
+        if(adapter.isSomethingSelected())
+            adapter.unselectAllProducts();
+
+
+        if(!viewMvc.areButtonsVisible())
+        {
+            Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
+            i.putExtra("listId", listId);
+            i.putExtra("listKey", listKey);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        }
+        else
+        {
+            viewMvc.hideButtons();
+        }
+    }
+
+    @Override
+    public void onAddButtonLongClick() {
+        if(adapter.isSomethingSelected())
+            adapter.unselectAllProducts();
+
+        viewMvc.showOrHideButtons();
+    }
+
+    @Override
+    public void onAddProductsButtonClick() {
+        if(adapter.isSomethingSelected())
+            adapter.unselectAllProducts();
+
+        Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listKey", listKey);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onAddGroupButtonClick() {
+        if(adapter.isSomethingSelected())
+            adapter.unselectAllProducts();
+
+        Intent i = new Intent(ListActivity.this, ChooseGroupActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listKey", listKey);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onSwipeRefresh() {
+        if(!isOfflineModeOn())//!amIOwner || (friendsFromList.size() != 0))
+        {
+            FirebaseDatabase.getInstance().goOnline();
+            resetTimersAndStartStop();
+            if(!canIDownload())
+            {
+                Log.d("CanIDownload", "You have to wait");
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        viewMvc.stopRefreshing();
+                    }
+                }, 500);
+
+            }
+            else
+            {
+
+                Log.d("CanIDownload", "You Can and downloaded");
+                saveDownloadTime();
+
+                checkingForUpdatesInASectionAction();
+
+                viewMvc.stopRefreshing();
+            }
+        }
+        else
+        {
+            viewMvc.stopRefreshing();
+        }
+    }
+
+    @Override
+    public void onEmptyListImageClick() {
+        Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listKey", listKey);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
 }

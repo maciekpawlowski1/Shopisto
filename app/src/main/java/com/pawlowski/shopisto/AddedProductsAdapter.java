@@ -3,7 +3,6 @@ package com.pawlowski.shopisto;
 import android.app.Activity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
+import com.pawlowski.shopisto.list_activity.ListActivity;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;

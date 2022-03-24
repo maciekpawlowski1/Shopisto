@@ -23,7 +23,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.pawlowski.shopisto.BaseActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.HelpActivity;
 import com.pawlowski.shopisto.MyFragmentHolder;
 import com.pawlowski.shopisto.R;

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.models.GroupModel;

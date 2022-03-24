@@ -20,6 +20,7 @@ import android.widget.PopupWindow;
 import android.widget.ScrollView;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.filters.MyFilters;

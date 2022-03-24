@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.text.InputFilter;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,9 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.filters.MyFilters;
+import com.pawlowski.shopisto.list_activity.ListActivity;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;

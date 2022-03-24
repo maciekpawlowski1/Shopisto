@@ -1,6 +1,5 @@
 package com.pawlowski.shopisto.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
@@ -18,10 +17,9 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.BaseActivity;
-import com.pawlowski.shopisto.ListCreatingActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
-import com.pawlowski.shopisto.ListActivity;
+import com.pawlowski.shopisto.list_activity.ListActivity;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.models.ListModel;
 import com.pawlowski.shopisto.R;
