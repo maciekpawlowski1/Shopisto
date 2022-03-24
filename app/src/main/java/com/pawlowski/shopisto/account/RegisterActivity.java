@@ -74,7 +74,7 @@ public class RegisterActivity extends BaseActivity implements RegisterViewMvc.Re
 
     }
 
-    void createAccount(String userMail, String password)
+    private void createAccount(String userMail, String password)
     {
         String mail = userMail.trim();
         showProgressDialog(getString(R.string.please_wait));

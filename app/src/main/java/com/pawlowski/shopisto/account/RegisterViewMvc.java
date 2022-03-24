@@ -12,6 +12,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseObservableViewMvc;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class RegisterViewMvc extends BaseObservableViewMvc<RegisterViewMvc.RegisterButtonsClickListener> {
@@ -23,7 +24,7 @@ public class RegisterViewMvc extends BaseObservableViewMvc<RegisterViewMvc.Regis
     private final TextView policyAgreeText;
 
 
-    public RegisterViewMvc(LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup) {
+    public RegisterViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup) {
         rootView = layoutInflater.inflate(R.layout.activity_register, viewGroup, false);
         backButton = findViewById(R.id.back_button_register);
         registerButton = findViewById(R.id.register_button_register);

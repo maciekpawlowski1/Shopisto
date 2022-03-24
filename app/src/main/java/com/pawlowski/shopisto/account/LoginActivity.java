@@ -36,95 +36,25 @@ import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.main.MainActivity;
 import com.pawlowski.shopisto.R;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginButtonsClickListener {
 
 
     private static final int RC_SIGN_IN = 51;
     private static final String TAG = "sign_in_by_google";
-    TextView createAccountText;
-    TextView resetPasswordText;
-    TextInputEditText mailInput;
-    TextInputEditText passwordInput;
-    Button loginButton;
-    TextView offlineModeText;
 
-    SignInButton signInByGoogleButton;
+    private LoginViewMvc viewMvc;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        viewMvc = new LoginViewMvc(getLayoutInflater(), null);
+        viewMvc.registerListener(this);
+        setContentView(viewMvc.getRootView());
         if(FirebaseAuth.getInstance().getCurrentUser() == null)
         {
-            createAccountText = findViewById(R.id.create_account_login);
-            resetPasswordText = findViewById(R.id.reset_password_login);
-            mailInput = findViewById(R.id.email_input_login);
-            passwordInput = findViewById(R.id.password_input_login);
-            loginButton = findViewById(R.id.login_button_login);
-
             MainActivity.resetListsTimestamp(LoginActivity.this);
-
-            createAccountText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-                    startActivity(i);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                }
-            });
-
-            resetPasswordText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(LoginActivity.this, ResetPasswordActivity.class);
-                    startActivity(i);
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                }
-            });
-
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String email = mailInput.getText().toString();
-                    String password = passwordInput.getText().toString();
-                    if(email.length() >= 3 && password.length() >= 5 && AddFriendActivity.isMailValid(email))
-                    {
-                        //Log in
-                        //showProgressDialog(getString(R.string.please_wait));
-                        logInWithPassword(email, password);
-                        //hideProgressDialog();
-                    }
-                    else
-                    {
-                        showErrorSnackbar(getString(R.string.first_fill_email_and_password), true);
-                    }
-
-
-
-                }
-            });
-
-
             initGoogleLogin();
-
-            signInByGoogleButton = findViewById(R.id.sign_in_by_google_login);
-            signInByGoogleButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    signInByGoogle();
-                }
-            });
-
-
-            offlineModeText = findViewById(R.id.offline_mode_text_login_activity);
-            offlineModeText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    turnOnOfflineModeAction();
-                }
-            });
         }
 
 
@@ -224,9 +154,6 @@ public class LoginActivity extends BaseActivity {
 
                             startMainActivityAfterLogin();
 
-
-
-
                             //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -253,7 +180,7 @@ public class LoginActivity extends BaseActivity {
     {
         String mail = userMail.trim();
         //String password = userPassword.trim();
-        loginButton.setClickable(false);
+        viewMvc.changeClickableOfSignInButton(false);
         showProgressDialog(getString(R.string.please_wait));
         FirebaseAuth.getInstance().signInWithEmailAndPassword(mail, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
@@ -274,7 +201,7 @@ public class LoginActivity extends BaseActivity {
             public void onFailure(@NonNull Exception e) {
                 hideProgressDialog();
                 showErrorSnackbar(getString(R.string.wrong_sign_in), true);
-                loginButton.setClickable(true);
+                viewMvc.changeClickableOfSignInButton(true);
             }
         });
 
@@ -294,5 +221,46 @@ public class LoginActivity extends BaseActivity {
             startActivity(i);
         }
         finish();
+    }
+
+    @Override
+    public void onLoginClick() {
+        String email = viewMvc.getMailInputText();
+        String password = viewMvc.getPasswordInputText();
+        if(email.length() >= 3 && password.length() >= 5 && AddFriendActivity.isMailValid(email))
+        {
+            //Log in
+            //showProgressDialog(getString(R.string.please_wait));
+            logInWithPassword(email, password);
+            //hideProgressDialog();
+        }
+        else
+        {
+            showErrorSnackbar(getString(R.string.first_fill_email_and_password), true);
+        }
+    }
+
+    @Override
+    public void onCreateAccountClick() {
+        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onOfflineModeClick() {
+        turnOnOfflineModeAction();
+    }
+
+    @Override
+    public void onSignInByGoogleClick() {
+        signInByGoogle();
+    }
+
+    @Override
+    public void onResetPasswordClick() {
+        Intent i = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }
