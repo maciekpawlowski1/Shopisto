@@ -33,127 +33,37 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class AddProductsToListActivity extends BaseActivity {
+public class AddProductsToListActivity extends BaseActivity implements AddProductsToListViewMvc.AddProductsToListButtonsClickListener {
 
 
-    AddedProductsAdapter adapter;
-    int listId;
-    String listKey;
-    ScrollView scrollView;
-    List<FriendModel> friendsFromList = new ArrayList<>();
+    private AddedProductsAdapter adapter;
+    private int listId;
+    private String listKey;
+    private List<FriendModel> friendsFromList = new ArrayList<>();
+    private CountDownTimer stopTimer;
+    private boolean changingActivity = false;
+    private boolean offlineMode = false;
 
-    boolean somethingAdded = false;
-
-    CountDownTimer stopTimer;
-
-    boolean changingActivity = false;
-
-    boolean offlineMode = false;
-
-    ImageButton backButton;
-    ImageButton micButton;
-    //Button addButton;
-    RecyclerView recyclerView;
-    EditText tittleEditText;
-
-
-
-
-    //ArrayList<ProductModel> addedProducts = new ArrayList<>();
+    private AddProductsToListViewMvc viewMvc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_products_to_list);
+        viewMvc = new AddProductsToListViewMvc(getLayoutInflater(), null);
+        setContentView(viewMvc.getRootView());
 
         Bundle bundle = getIntent().getExtras();
         listId = bundle.getInt("listId");
         listKey = bundle.getString("listKey");
-
-        backButton = findViewById(R.id.back_button_add_products_to_list);
-        micButton = findViewById(R.id.mic_button_add_products_to_list);
-        recyclerView = findViewById(R.id.recycler_added_products);
-        //addButton = findViewById(R.id.add_button_add_product_to_list);
-        tittleEditText = findViewById(R.id.tittle_edit_text_add_product_to_list);
-        scrollView = findViewById(R.id.scroll_view_add_products_to_list);
 
         offlineMode = isOfflineModeOn();
 
 
         //FirebaseDatabase.getInstance().goOnline();
 
-        /*tittleEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-
-                return false;
-            }
-        });*/
-
-        InputFilter filter = MyFilters.getTittleInputFilter();
-        tittleEditText.setFilters(new InputFilter[] {filter});
-
-        tittleEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //showPopUp();
-                if(s.toString().length() != 0)
-                    adapter.turnOnSuggesting(s.toString());
-                else
-                {
-                    adapter.turnOffSuggesting();
-                }
-           }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-        /*addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String tittle = tittleEditText.getText().toString();
-                if(tittle.length() == 0)
-                {
-                    showErrorSnackbar(getString(R.string.first_put_product_tittle), true);
-                }
-                else
-                {
-                    addProduct(tittle);
-                }
-            }
-        });*/
-
-        micButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                convertSpeech();
-            }
-        });
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         adapter = new AddedProductsAdapter(this, listId, listKey, offlineMode);
-        recyclerView.setAdapter(adapter);
+        viewMvc.setRecyclerAdapter(adapter);
         adapter.setProducts(DBHandler.getInstance(getApplicationContext()).getAllProductOfList(listId));
-
-
-
 
 
         stopTimer = new CountDownTimer(10000, 6000) {
@@ -173,6 +83,7 @@ public class AddProductsToListActivity extends BaseActivity {
 
     }
 
+
     void addProduct(String productTittle)
     {
         resetTimer();
@@ -180,15 +91,13 @@ public class AddProductsToListActivity extends BaseActivity {
         String tittle = productTittle.trim();
         if(!offlineMode)
             OnlineDBHandler.addProductWithoutDescription(listKey, tittle, 1, friendsFromList);
-        tittleEditText.setText("");
+        viewMvc.resetProductTittleInput();
         adapter.turnOffSuggesting();
         ProductModel newProduct = new ProductModel(tittle, " ", false, 1);
         adapter.addProductAtBegining(newProduct);
-        recyclerView.scrollToPosition(0);
-        //adapter.setProducts(addedProducts);
+        viewMvc.scrollRecyclerToTheTop();
         DBHandler.getInstance(getApplicationContext()).insertProduct(newProduct, listId);
         newProduct.setId(DBHandler.getInstance(getApplicationContext()).getIdOfLastProduct());
-        //addedProducts.add(0, newProduct);
     }
 
     public void resetTimer()
@@ -199,12 +108,7 @@ public class AddProductsToListActivity extends BaseActivity {
     }
 
 
-
-
-
-
-
-    void convertSpeech()
+    private void convertSpeech()
     {
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -219,13 +123,12 @@ public class AddProductsToListActivity extends BaseActivity {
         if(requestCode == 1 && resultCode == RESULT_OK)
         {
             ArrayList<String> speakResults = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            //showErrorSnackbar(speakResults.get(0), false);
             String tittle = speakResults.get(0);
             if(!adapter.isAnyTittleWithThisTittle(tittle))
                 addProduct(tittle);
             else
             {
-                tittleEditText.setText("");
+                viewMvc.resetProductTittleInput();
                 adapter.turnOffSuggesting();
             }
         }
@@ -235,11 +138,6 @@ public class AddProductsToListActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        /*DBHandler dbHandler = DBHandler.getInstance(getApplicationContext());
-        for(ProductModel p:addedProducts)
-        {
-            dbHandler.insertProduct(p, listId);
-        }*/
 
         changingActivity = true;
 
@@ -250,6 +148,7 @@ public class AddProductsToListActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        viewMvc.registerListener(this);
         changingActivity = false;
         loadFriendsFromList();
 
@@ -260,6 +159,8 @@ public class AddProductsToListActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        viewMvc.unregisterListener(this);
+
         stopTimer.cancel();
         if(!changingActivity)
             FirebaseDatabase.getInstance().goOffline();
@@ -279,8 +180,23 @@ public class AddProductsToListActivity extends BaseActivity {
     }
 
 
+    @Override
+    public void onProductTittleTextChanged(String tittleInput) {
+        if(tittleInput.length() != 0)
+            adapter.turnOnSuggesting(tittleInput);
+        else
+        {
+            adapter.turnOffSuggesting();
+        }
+    }
 
+    @Override
+    public void onBackButtonClick() {
+        onBackPressed();
+    }
 
-
-
+    @Override
+    public void onMicButtonClick() {
+        convertSpeech();
+    }
 }
