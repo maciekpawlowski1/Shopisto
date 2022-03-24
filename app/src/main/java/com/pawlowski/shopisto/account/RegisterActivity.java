@@ -24,91 +24,53 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.main.MainActivity;
 
-public class RegisterActivity extends BaseActivity {
-    ImageButton backButton;
-    Button registerButton;
-    TextInputEditText mailInput;
-    TextInputEditText passwordInput;
-    TextInputEditText passwordInput2;
-    TextView policyAgreeText;
+public class RegisterActivity extends BaseActivity implements RegisterViewMvc.RegisterButtonsClickListener {
+
+    private RegisterViewMvc viewMvc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-        backButton = findViewById(R.id.back_button_register);
-        registerButton = findViewById(R.id.register_button_register);
-        mailInput = findViewById(R.id.email_input_register);
-        passwordInput = findViewById(R.id.password_input_register);
-        passwordInput2 = findViewById(R.id.password_repeat_input_register);
+        viewMvc = new RegisterViewMvc(getLayoutInflater(), null);
+        setContentView(viewMvc.getRootView());
+
 
 
         if(savedInstanceState != null)
         {
-            mailInput.setText(savedInstanceState.getString("mail"));
-            passwordInput.setText(savedInstanceState.getString("password1"));
-            passwordInput2.setText(savedInstanceState.getString("password2"));
+            viewMvc.bindInputTexts(savedInstanceState.getString("mail"),
+                    savedInstanceState.getString("password1"),
+                    savedInstanceState.getString("password2"));
         }
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mail = mailInput.getText().toString();
-                String password = passwordInput.getText().toString();
-                String password2 = passwordInput2.getText().toString();
-                if(mail.length() < 3 || !AddFriendActivity.isMailValid(mail))
-                {
-                    showErrorSnackbar(getString(R.string.invalid_mail), true);
-                }
-                else if (password.length() < 6)
-                {
-                    showErrorSnackbar(getString(R.string.short_password), true);
-                }
-                else if(!password.equals(password2))
-                {
-                    showErrorSnackbar(getString(R.string.different_passwords), true);
-                }
-                else
-                {
-                    //Create account
-                    createAccount(mail, password);
+    }
 
-                }
-            }
-        });
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewMvc.registerListener(this);
+    }
 
-        policyAgreeText = findViewById(R.id.agree_for_privacy_text_register);
-        policyAgreeText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(RegisterActivity.this, PrivacyPolicyActivity.class);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        viewMvc.unregisterListener(this);
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("mail", mailInput.getText().toString());
-        outState.putString("password1", passwordInput.getText().toString());
-        outState.putString("password2", passwordInput2.getText().toString());
+        outState.putString("mail", viewMvc.getMailInputText());
+        outState.putString("password1", viewMvc.getPasswordInputText());
+        outState.putString("password2", viewMvc.getRepeatPasswordInputText());
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mailInput.setText(savedInstanceState.getString("mail"));
-        passwordInput.setText(savedInstanceState.getString("password1"));
-        passwordInput2.setText(savedInstanceState.getString("password2"));
+        viewMvc.bindInputTexts(savedInstanceState.getString("mail"),
+                savedInstanceState.getString("password1"),
+                savedInstanceState.getString("password2"));
 
     }
 
@@ -116,7 +78,7 @@ public class RegisterActivity extends BaseActivity {
     {
         String mail = userMail.trim();
         showProgressDialog(getString(R.string.please_wait));
-        registerButton.setClickable(false);
+        viewMvc.changeClickableOfButton(false);
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(mail, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
             public void onSuccess(AuthResult authResult) {
@@ -158,8 +120,44 @@ public class RegisterActivity extends BaseActivity {
             public void onFailure(@NonNull Exception e) {
                 hideProgressDialog();
                 showErrorSnackbar(getString(R.string.account_not_created), true);
-                registerButton.setClickable(true);
+                viewMvc.changeClickableOfButton(true);
             }
         });
+    }
+
+    @Override
+    public void onBackClick() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onRegisterClick() {
+        String mail = viewMvc.getMailInputText();
+        String password = viewMvc.getPasswordInputText();
+        String password2 = viewMvc.getRepeatPasswordInputText();
+        if(mail.length() < 3 || !AddFriendActivity.isMailValid(mail))
+        {
+            showErrorSnackbar(getString(R.string.invalid_mail), true);
+        }
+        else if (password.length() < 6)
+        {
+            showErrorSnackbar(getString(R.string.short_password), true);
+        }
+        else if(!password.equals(password2))
+        {
+            showErrorSnackbar(getString(R.string.different_passwords), true);
+        }
+        else
+        {
+            //Create account
+            createAccount(mail, password);
+        }
+    }
+
+    @Override
+    public void onPolicyClick() {
+        Intent i = new Intent(RegisterActivity.this, PrivacyPolicyActivity.class);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }
