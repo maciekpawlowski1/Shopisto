@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto;
+package com.pawlowski.shopisto.add_products_to_list_activity;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +20,7 @@ import android.widget.PopupWindow;
 import android.widget.ScrollView;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
@@ -34,18 +35,11 @@ import java.util.Locale;
 
 public class AddProductsToListActivity extends BaseActivity {
 
-    ImageButton backButton;
-    ImageButton micButton;
-    //Button addButton;
-    RecyclerView recyclerView;
+
     AddedProductsAdapter adapter;
-    EditText tittleEditText;
     int listId;
     String listKey;
-    View popupView = null;
-    PopupWindow popupWindow = null;
     ScrollView scrollView;
-    SuggestionAdapter popupAdapter = new SuggestionAdapter(this);
     List<FriendModel> friendsFromList = new ArrayList<>();
 
     boolean somethingAdded = false;
@@ -55,6 +49,12 @@ public class AddProductsToListActivity extends BaseActivity {
     boolean changingActivity = false;
 
     boolean offlineMode = false;
+
+    ImageButton backButton;
+    ImageButton micButton;
+    //Button addButton;
+    RecyclerView recyclerView;
+    EditText tittleEditText;
 
 
 
@@ -271,55 +271,7 @@ public class AddProductsToListActivity extends BaseActivity {
         friendsFromList = DBHandler.getInstance(getApplicationContext()).getFriendsWithoutNicknamesFromThisList(listId);
     }
 
-    public void showPopUp()
-    {
-        if(!isPopUpOpen())
-        {
-            popupView = LayoutInflater.from(this).inflate(R.layout.adding_products_pop_up, null);
-            popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, 800);
-            RecyclerView recyclerView = popupView.findViewById(R.id.recycler_suggestion_pop_up);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            //popupAdapter
-            updatePopupAdapter();
 
-            recyclerView.setAdapter(popupAdapter);
-            //popupWindow.setFocusable(true);
-            //popupWindow.setBackgroundDrawable(new BitmapDrawable());
-            //popupWindow.setOutsideTouchable(true);
-
-            popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    popupView = null;
-                    popupWindow = null;
-                }
-            });
-            popupWindow.showAsDropDown(tittleEditText);
-            //popupWindow.showAtLocation(popupView, Gravity.NO_GRAVITY, 0, (int)scrollView.getY()+1+200);
-        }
-        else
-        {
-            //hidePopUp();
-            //showPopUp();
-            updatePopupAdapter();
-        }
-
-        /*Button btn = (Button) popupView.findViewById(R.id.button);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-            }
-        });*/
-
-        //RecyclerView recyclerView = (RecyclerView) popupView.findViewById(R.id.rv_recycler_view);
-
-        //PopupRecyclerViewAdapter adapter = new PopupRecyclerViewAdapter(mContext,data);
-        //recyclerView.setAdapter(adapter);
-
-
-
-    }
 
     public List<FriendModel> getFriendsFromList()
     {
@@ -327,34 +279,7 @@ public class AddProductsToListActivity extends BaseActivity {
     }
 
 
-    public void updatePopupAdapter()
-    {
-        ArrayList<String> suggestionList = new ArrayList<>(Arrays.asList("Mleko", "Jabłko", "Sok",
-                "Jogurt", "Aloe King", "Sugestia6", "Sugestia7", "Sugestia8", "Sugestia9", "Sugestia10"));
 
-        if(tittleEditText.length() != 0)
-            suggestionList.add(0, tittleEditText.getText().toString());
-
-        popupAdapter.setSuggestions(suggestionList);
-    }
-
-    public boolean isPopUpOpen()
-    {
-        if(popupWindow == null && popupView == null)
-            return false;
-        else
-            return true;
-    }
-
-    public void hidePopUp()
-    {
-        if(popupWindow != null)
-        {
-            popupWindow.dismiss();
-            popupWindow = null;
-            popupView = null;
-        }
-    }
 
 
 

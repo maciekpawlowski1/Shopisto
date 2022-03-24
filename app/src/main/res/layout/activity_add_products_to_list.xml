@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/card_backgroubd_color2"
-    tools:context=".AddProductsToListActivity">
+    tools:context=".add_products_to_list_activity.AddProductsToListActivity">
 
     <View
         android:id="@+id/divider_add_products_to_list"

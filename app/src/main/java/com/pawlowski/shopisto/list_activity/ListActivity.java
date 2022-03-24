@@ -19,7 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pawlowski.shopisto.AddProductsToListActivity;
+import com.pawlowski.shopisto.add_products_to_list_activity.AddProductsToListActivity;
 import com.pawlowski.shopisto.ChooseGroupActivity;
 import com.pawlowski.shopisto.EditProductActivity;
 import com.pawlowski.shopisto.R;

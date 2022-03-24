@@ -61,7 +61,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".AddProductsToListActivity"
+            android:name=".add_products_to_list_activity.AddProductsToListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -70,7 +70,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme" />
         <activity
-            android:name=".ListCreatingActivity"
+            android:name=".list_creating_activity.ListCreatingActivity"
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait" />
         <activity
