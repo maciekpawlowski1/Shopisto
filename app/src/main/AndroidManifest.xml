@@ -43,7 +43,7 @@
             android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ChooseGroupActivity"
+            android:name=".choose_group_activity.ChooseGroupActivity"
             android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme" />
