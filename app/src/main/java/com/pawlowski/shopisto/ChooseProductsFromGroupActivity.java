@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
+import com.pawlowski.shopisto.group_activity.ProductsInGroupAdapter;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;

@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.ChooseGroupActivity;
 import com.pawlowski.shopisto.ChooseProductsFromGroupActivity;
-import com.pawlowski.shopisto.GroupActivity;
+import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.models.GroupModel;

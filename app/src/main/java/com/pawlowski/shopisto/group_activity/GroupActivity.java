@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto;
+package com.pawlowski.shopisto.group_activity;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,84 +18,55 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.EditProductActivity;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.models.ProductModel;
 
-public class GroupActivity extends BaseActivity {
+public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.GroupActivityButtonsClickListener {
 
-    int groupId;
-    String groupTittle;
-    String groupKey;
-    RecyclerView recycler;
-    ProductsInGroupAdapter adapter;
+    private int groupId;
+    private String groupKey;
 
-    FloatingActionButton addButton;
+    private ProductsInGroupAdapter adapter;
 
-    MenuItem editProductItem;
-    MenuItem deleteProductItem;
+    private MenuItem editProductItem;
+    private MenuItem deleteProductItem;
 
-    ImageView noProductsImage;
-    TextView noProductsText;
+    private CountDownTimer stoppingTimer;
 
-    AdView mAdView;
+    private boolean changingActivity = false;
 
-    CountDownTimer stoppingTimer;
-
-    boolean changingActivity = false;
+    private GroupActivityViewMvc viewMvc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group);
+        viewMvc = new GroupActivityViewMvc(getLayoutInflater(), null);
+        setContentView(viewMvc.getRootView());
 
         Bundle bundle = getIntent().getExtras();
         groupId = bundle.getInt("groupId", -1);
-        groupTittle = bundle.getString("groupTittle", " ");
+        String groupTittle = bundle.getString("groupTittle", " ");
         groupKey = bundle.getString("groupKey");
-        /*toolbar = findViewById(R.id.toolbar_list);
-        setSupportActionBar(toolbar);*/
+
         getSupportActionBar().setTitle(groupTittle);
         adapter = new ProductsInGroupAdapter(this, groupId, false, groupKey);
+        viewMvc.setRecyclerAdapter(adapter);
 
-
-        recycler = findViewById(R.id.recycler_products_in_groups);
-        addButton = findViewById(R.id.add_product_button_group);
-
-        recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recycler.setAdapter(adapter);
-
-
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(GroupActivity.this, EditProductActivity.class);
-                i.putExtra("group_id", groupId);
-                i.putExtra("product", new ProductModel("", "", false, 1));
-                i.putExtra("groups", true);
-                i.putExtra("groupKey", groupKey);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
-
-
-        noProductsImage = findViewById(R.id.no_products_image_products_in_group);
-        noProductsText = findViewById(R.id.no_products_text_products_in_groups);
 
         hideNoProductsImage();
 
-        mAdView = findViewById(R.id.ad_view_group_activity);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        viewMvc.loadAd(adRequest);
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        viewMvc.registerListener(this);
         boolean offlineMode = isOfflineModeOn();
         if(!offlineMode)
             FirebaseDatabase.getInstance().goOnline();
@@ -113,8 +84,6 @@ public class GroupActivity extends BaseActivity {
         }
 
 
-
-
         stoppingTimer = new CountDownTimer(10000, 10000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -127,9 +96,7 @@ public class GroupActivity extends BaseActivity {
                 {
                     FirebaseDatabase.getInstance().goOffline();
                     Log.d("ConnectionByTimer", "goOffline");
-
                 }
-
             }
         };
         if(offlineMode)
@@ -137,17 +104,20 @@ public class GroupActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        viewMvc.unregisterListener(this);
+    }
+
     public void showNoProductsImage()
     {
-        noProductsText.setVisibility(View.VISIBLE);
-        noProductsImage.setVisibility(View.VISIBLE);
+        viewMvc.showNoProductsImage();
     }
 
     public void hideNoProductsImage()
     {
-        noProductsText.setVisibility(View.GONE);
-        noProductsImage.setVisibility(View.GONE);
-
+        viewMvc.hideNoProductsImage();
     }
 
 
@@ -170,27 +140,15 @@ public class GroupActivity extends BaseActivity {
                 //Edit product activity open
                 Intent i = new Intent(GroupActivity.this, EditProductActivity.class);
                 i.putExtra("group_id", groupId);
-                //i.putExtra("product", new ProductModel("", "", false, 1));
                 i.putExtra("groups", true);
                 i.putExtra("groupKey", groupKey);
 
-
                 ProductModel product = adapter.getSelectedProduct();
                 adapter.unselectProduct();
-                /*i.putExtra("productTittle", product.getTittle());
-                i.putExtra("productDescription", product.getDescription());
-                i.putExtra("productId", product.getId());
-                i.putExtra("productNumber", product.getNumber());*/
                 i.putExtra("product", product);
                 i.putExtra("category_id", product.getCategoryId());
-                //i.putExtra("productSelected", product.isSelected());
                 startActivity(i);
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-                //startActivity(i);
-                //overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-                //finish();
 
                 return true;
             }
@@ -201,7 +159,7 @@ public class GroupActivity extends BaseActivity {
                 //Delete product action
                 resetTimer();
                 FirebaseDatabase.getInstance().goOnline();
-                adapter.deleteSelectedProducts(recycler);
+                adapter.deleteSelectedProducts(viewMvc.getRootView());
                 //adapter.unselectProduct();
                 return true;
             }
@@ -260,5 +218,16 @@ public class GroupActivity extends BaseActivity {
             adapter.unselectAllProducts();
         }
 
+    }
+
+    @Override
+    public void onAddButtonClick() {
+        Intent i = new Intent(GroupActivity.this, EditProductActivity.class);
+        i.putExtra("group_id", groupId);
+        i.putExtra("product", new ProductModel("", "", false, 1));
+        i.putExtra("groups", true);
+        i.putExtra("groupKey", groupKey);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

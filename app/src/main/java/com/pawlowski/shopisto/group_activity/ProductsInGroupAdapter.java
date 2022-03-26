@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto;
+package com.pawlowski.shopisto.group_activity;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.pawlowski.shopisto.EditProductActivity;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
@@ -32,7 +34,7 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
     String groupKey;
     ArrayList<Boolean>positionsSelected = new ArrayList<>();
 
-    ProductsInGroupAdapter(BaseActivity activity, int groupId, boolean choosing, String groupKey)
+    public ProductsInGroupAdapter(BaseActivity activity, int groupId, boolean choosing, String groupKey)
     {
         this.activity = activity;
         this.groupId = groupId;

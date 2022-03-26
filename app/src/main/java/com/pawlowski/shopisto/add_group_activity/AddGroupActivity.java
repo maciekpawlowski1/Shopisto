@@ -3,7 +3,7 @@ package com.pawlowski.shopisto.add_group_activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.pawlowski.shopisto.GroupActivity;
+import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
