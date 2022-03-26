@@ -53,7 +53,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme" />
         <activity
-            android:name=".AddGroupActivity"
+            android:name=".add_group_activity.AddGroupActivity"
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait" />
         <activity

@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.AddGroupActivity;
+import com.pawlowski.shopisto.add_group_activity.AddGroupActivity;
 import com.pawlowski.shopisto.MyFragmentHolder;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
