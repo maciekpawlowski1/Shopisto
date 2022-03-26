@@ -23,7 +23,7 @@ import com.pawlowski.shopisto.add_products_to_list_activity.AddProductsToListAct
 import com.pawlowski.shopisto.choose_group_activity.ChooseGroupActivity;
 import com.pawlowski.shopisto.EditProductActivity;
 import com.pawlowski.shopisto.R;
-import com.pawlowski.shopisto.ShareActivity;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;

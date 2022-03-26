@@ -1,10 +1,4 @@
-package com.pawlowski.shopisto;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.pawlowski.shopisto.share_activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,11 +7,9 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
@@ -29,27 +21,30 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ShareActivity extends AppCompatActivity {
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ShareActivity extends AppCompatActivity implements ShareActivityViewMvc.ShareActivityButtonsClickListener {
 
     private static final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 300;
-    ImageButton imageButton;
-    CardView cardView;
+
     int listId;
     String listTittle;
     String listKey;
 
-    RecyclerView recycler;
     FriendsAdapter adapter;
-    TextView textView;
     CountDownTimer goOfflineTimer;
 
     boolean amIOwner;
     boolean changingActivity = false;
 
+    private ShareActivityViewMvc viewMvc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_share);
+        viewMvc = new ShareActivityViewMvc(getLayoutInflater(), null);
+        setContentView(viewMvc.getRootView());
 
         getSupportActionBar().setTitle(getString(R.string.share_list));
 
@@ -84,11 +79,7 @@ public class ShareActivity extends AppCompatActivity {
         }
 
 
-        imageButton = findViewById(R.id.image_button_share);
-        cardView = findViewById(R.id.card_view_share);
 
-        recycler = findViewById(R.id.friends_recycler_share);
-        textView = findViewById(R.id.text_view_share_activity);
 
         Bundle bundle = getIntent().getExtras();
         listId = bundle.getInt("listId");
@@ -100,41 +91,34 @@ public class ShareActivity extends AppCompatActivity {
 
         if(amIOwner)
         {
-            textView.setText(R.string.share_friends_from_shopisto);
+            viewMvc.setTextViewText(getString(R.string.share_friends_from_shopisto));
         }
         else
         {
-            textView.setText(R.string.another_list_users);
+           viewMvc.setTextViewText(getString(R.string.another_list_users));
         }
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareAction();
-            }
-        });
 
-        cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareAction();
-
-            }
-        });
 
         adapter = new FriendsAdapter(this, listKey, amIOwner);
-        recycler.setAdapter(adapter);
-        recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        viewMvc.setAdapter(adapter);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+        viewMvc.registerListener(this);
         changingActivity = false;
 
         loadFriends();
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        viewMvc.unregisterListener(this);
     }
 
     public void loadFriends()
@@ -214,7 +198,7 @@ public class ShareActivity extends AppCompatActivity {
         for(int i=0;i<products.size();i++)
         {
             ProductModel product = products.get(i);
-            body+= (i+1) + ") " + product.getTittle();
+            body += (i+1) + ") " + product.getTittle();
             if(product.getDescription().length() != 0 && !product.getDescription().equals(" "))
             {
                 body += " (" + product.getDescription() + ")";
@@ -277,5 +261,15 @@ public class ShareActivity extends AppCompatActivity {
         startActivity(i);
         finish();
 
+    }
+
+    @Override
+    public void onImageButtonClick() {
+        shareAction();
+    }
+
+    @Override
+    public void onCardClick() {
+        shareAction();
     }
 }

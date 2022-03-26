@@ -16,7 +16,7 @@
 
         <activity
             android:name=".add_friend_activity.AddFriendActivity"
-            android:parentActivityName=".ShareActivity"
+            android:parentActivityName=".share_activity.ShareActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme2" />
 
@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ShareActivity"
+            android:name=".share_activity.ShareActivity"
             android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait" />
         <activity
