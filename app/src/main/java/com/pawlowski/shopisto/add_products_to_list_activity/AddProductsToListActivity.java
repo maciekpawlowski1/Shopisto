@@ -1,37 +1,22 @@
 package com.pawlowski.shopisto.add_products_to_list_activity;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.PopupWindow;
-import android.widget.ScrollView;
 
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
-import com.pawlowski.shopisto.filters.MyFilters;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.Nullable;
 
 public class AddProductsToListActivity extends BaseActivity implements AddProductsToListViewMvc.AddProductsToListButtonsClickListener {
 

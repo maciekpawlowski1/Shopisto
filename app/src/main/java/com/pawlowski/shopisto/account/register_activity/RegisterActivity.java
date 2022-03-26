@@ -11,7 +11,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.AddFriendActivity;
+import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.account.privacy_policy_activity.PrivacyPolicyActivity;

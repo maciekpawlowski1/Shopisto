@@ -15,7 +15,7 @@
             android:parentActivityName=".account.register_activity.RegisterActivity"/>
 
         <activity
-            android:name=".AddFriendActivity"
+            android:name=".add_friend_activity.AddFriendActivity"
             android:parentActivityName=".ShareActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppBarTheme2" />

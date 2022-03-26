@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.list_activity.ListActivity;
