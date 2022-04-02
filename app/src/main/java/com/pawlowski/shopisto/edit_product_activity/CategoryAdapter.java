@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto;
+package com.pawlowski.shopisto.edit_product_activity;
 
 import android.app.Activity;
 import android.os.Build;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.models.CategoryModel;
 
 import java.util.ArrayList;

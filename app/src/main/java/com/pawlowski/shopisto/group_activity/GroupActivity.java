@@ -1,8 +1,6 @@
 package com.pawlowski.shopisto.group_activity;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,15 +8,10 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.EditProductActivity;
+import com.pawlowski.shopisto.edit_product_activity.EditProductActivity;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;

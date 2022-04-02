@@ -1,79 +1,51 @@
-package com.pawlowski.shopisto;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.pawlowski.shopisto.edit_product_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.text.InputFilter;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
-import com.pawlowski.shopisto.filters.MyFilters;
 import com.pawlowski.shopisto.list_activity.ListActivity;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class EditProductActivity extends BaseActivity {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
-    ProductModel product;
-    int listId;
-    String listTittle;
-    int selectedCategory;
-    String listKey;
+public class EditProductActivity extends BaseActivity implements EditProductViewMvc.EditProductButtonsClickListener {
 
-    EditText tittleEditText;
-    EditText descriptionEditText;
-    EditText numberEditText;
+    private ProductModel product;
+    private int listId;
+    private String listTittle;
+    private String listKey;
+    private boolean groupProduct = false;
+    private boolean editGroup = false;
+    private int groupId;
+    private String groupKey;
 
-    Toolbar toolbar;
-    boolean groupProduct = false;
-    boolean editGroup = false;
-    int groupId;
-    String groupKey;
-
-    ImageButton micTittle;
-    ImageButton micDescription;
-
-    RecyclerView categoryRecycler;
-    CategoryAdapter adapter;
+    private EditProductViewMvc viewMvc;
+    private CategoryAdapter adapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_product);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setIcon(R.drawable.cancel_icon2);
-        //getSupportActionBar().setDisplayUseLogoEnabled(true);
-        toolbar = findViewById(R.id.toolbar_edit_product);
-        //toolbar.setLogo(R.drawable.cancel_icon2);
+        viewMvc = new EditProductViewMvc(getLayoutInflater(), null);
+        setContentView(viewMvc.getRootView());
+        Toolbar toolbar = findViewById(R.id.toolbar_edit_product);
 
         setSupportActionBar(toolbar);
 
         FirebaseDatabase.getInstance().goOffline();
-
-        categoryRecycler = findViewById(R.id.category_recycler_edit_product);
-        tittleEditText = findViewById(R.id.tittle_edit_edit_product);
-        descriptionEditText = findViewById(R.id.description_edit_edit_product);
-        numberEditText = findViewById(R.id.number_edit_edit_product);
-
-        micTittle = findViewById(R.id.mic_button_edit_product);
-        micDescription = findViewById(R.id.mic_button_edit_product2);
-
 
 
         Bundle bundle = getIntent().getExtras();
@@ -84,9 +56,7 @@ public class EditProductActivity extends BaseActivity {
         groupId = bundle.getInt("group_id", -1);
         listKey = bundle.getString("listKey");
 
-        selectedCategory = bundle.getInt("category_id", 0);
-        //product.setSelected(bundle.getBoolean("productSelected", false));
-        tittleEditText.setText(product.getTittle());
+        int selectedCategory = bundle.getInt("category_id", 0);
 
         if(groupProduct)
         {
@@ -97,33 +67,23 @@ public class EditProductActivity extends BaseActivity {
             groupKey = bundle.getString("groupKey");
         }
 
-        if(product.getDescription().equals(" "))
-            descriptionEditText.setText("");
-        else
-            descriptionEditText.setText(product.getDescription());
-
-        numberEditText.setText(product.getNumber()+"");
-
-        micTittle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                convertSpeech(2);
-            }
-        });
-
-        micDescription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                convertSpeech(3);
-            }
-        });
+        viewMvc.bindProduct(product);
 
         adapter = new CategoryAdapter(this, selectedCategory);
-        categoryRecycler.setAdapter(adapter);
-        categoryRecycler.setLayoutManager(new LinearLayoutManager(this));
+        viewMvc.setRecyclerAdapter(adapter);
 
-        tittleEditText.setFilters(new InputFilter[]{MyFilters.getTittleInputFilter()});
-        descriptionEditText.setFilters(new InputFilter[]{MyFilters.getTittleInputFilter()});
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewMvc.registerListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        viewMvc.unregisterListener(this);
     }
 
     @Override
@@ -164,13 +124,13 @@ public class EditProductActivity extends BaseActivity {
     private boolean save()
     {
 
-        if(tittleEditText.getText().toString().length() == 0)
+        if(viewMvc.getTittleInputText().length() == 0)
         {
             showErrorSnackbar(getString(R.string.first_put_product_tittle), true);
             return false;
         }
 
-        if(numberEditText.getText().toString().length() == 0)
+        if(viewMvc.getNumberInputText().length() == 0)
         {
             showErrorSnackbar(getString(R.string.first_put_product_number), true);
             return false;
@@ -179,14 +139,13 @@ public class EditProductActivity extends BaseActivity {
         }
 
         String previousTittle = product.getTittle();
-        product.setTittle(tittleEditText.getText().toString());
-        product.setDescription(descriptionEditText.getText().toString());
-        product.setNumber(Integer.parseInt(numberEditText.getText().toString()));
+        product.setTittle(viewMvc.getTittleInputText());
+        product.setDescription(viewMvc.getDescriptionInputText());
+        product.setNumber(Integer.parseInt(viewMvc.getNumberInputText()));
         product.setCategoryId(adapter.getSelectedCategory());
 
         if(!groupProduct)
         {
-            //Log.d("previous", previousTittle);
             if(!isOfflineModeOn())
                 OnlineDBHandler.updateProduct(listKey, product, !product.getTittle().equals(previousTittle), previousTittle,
                         DBHandler.getInstance(getApplicationContext()).getFriendsWithoutNicknamesFromThisList(listId));
@@ -231,21 +190,31 @@ public class EditProductActivity extends BaseActivity {
         {
             ArrayList<String> speakResults = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             //showErrorSnackbar(speakResults.get(0), false);
-            String tittle = speakResults.get(0);
-            if(tittle.length() > 0)
+            String text = speakResults.get(0);
+            if(text.length() > 0)
             {
-                tittleEditText.setText(tittle);
+                viewMvc.setTittleInput(text);
             }
         }
         else if(requestCode == 3 && resultCode == RESULT_OK)
         {
             ArrayList<String> speakResults = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            String tittle = speakResults.get(0);
-            if(tittle.length() > 0)
+            String text = speakResults.get(0);
+            if(text.length() > 0)
             {
-                descriptionEditText.setText(tittle);
+                viewMvc.setDescriptionInput(text);
             }
         }
 
+    }
+
+    @Override
+    public void onMicTittleClick() {
+        convertSpeech(2);
+    }
+
+    @Override
+    public void onMicDescriptionClick() {
+        convertSpeech(3);
     }
 }

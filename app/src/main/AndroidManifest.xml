@@ -57,7 +57,7 @@
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".EditProductActivity"
+            android:name=".edit_product_activity.EditProductActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity

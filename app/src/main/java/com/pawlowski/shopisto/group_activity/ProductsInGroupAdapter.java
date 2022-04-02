@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.pawlowski.shopisto.EditProductActivity;
+import com.pawlowski.shopisto.edit_product_activity.EditProductActivity;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;

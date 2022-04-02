@@ -48,7 +48,8 @@ public class ChooseGroupViewMvc extends BaseObservableViewMvc<ChooseGroupViewMvc
                 for(ChooseGroupButtonsClickListener l:listeners)
                 {
                     l.onAddGroupClickListener();
-                }            }
+                }
+            }
         });
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +58,8 @@ public class ChooseGroupViewMvc extends BaseObservableViewMvc<ChooseGroupViewMvc
                 for(ChooseGroupButtonsClickListener l:listeners)
                 {
                     l.onAddGroupClickListener();
-                }            }
+                }
+            }
         });
     }
 

@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pawlowski.shopisto.add_products_to_list_activity.AddProductsToListActivity;
 import com.pawlowski.shopisto.choose_group_activity.ChooseGroupActivity;
-import com.pawlowski.shopisto.EditProductActivity;
+import com.pawlowski.shopisto.edit_product_activity.EditProductActivity;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.share_activity.ShareActivity;
 import com.pawlowski.shopisto.account.login_activity.LoginActivity;
