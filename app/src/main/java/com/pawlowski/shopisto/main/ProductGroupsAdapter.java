@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.choose_group_activity.ChooseGroupActivity;
-import com.pawlowski.shopisto.ChooseProductsFromGroupActivity;
+import com.pawlowski.shopisto.choose_products_from_group_activity.ChooseProductsFromGroupActivity;
 import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;

@@ -1,13 +1,10 @@
-package com.pawlowski.shopisto;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.pawlowski.shopisto.choose_products_from_group_activity;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
@@ -16,42 +13,38 @@ import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+
 public class ChooseProductsFromGroupActivity extends BaseActivity {
 
 
-    RecyclerView recyclerView;
-    int groupId;
-    int listId;
-    String listKey;
-    String groupKey;
-    ProductsInGroupAdapter adapter;
+    private int listId;
+    private String listKey;
+    private ProductsInGroupAdapter adapter;
+    private ChooseProductsFromGroupViewMvc viewMvc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_products_from_group);
+        viewMvc = new ChooseProductsFromGroupViewMvc(getLayoutInflater(), null);
+        setContentView(viewMvc.getRootView());
         getSupportActionBar().setTitle(getString(R.string.choose_products));
 
         Bundle bundle = getIntent().getExtras();
-        groupId = bundle.getInt("groupId", -1);
+        int groupId = bundle.getInt("groupId", -1);
         listId = bundle.getInt("listId", -1);
         listKey = bundle.getString("listKey");
-        groupKey = bundle.getString("groupKey");
+        String groupKey = bundle.getString("groupKey");
 
 
-        recyclerView = findViewById(R.id.recycler_choose_products_in_groups);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ProductsInGroupAdapter(this, groupId, true, groupKey);
-        recyclerView.setAdapter(adapter);
+        viewMvc.setRecyclerAdapter(adapter);
 
         adapter.setProducts(DBHandler.getInstance(getApplicationContext()).getAllProductsFromGroup(groupId));
     }
 
     private boolean addSelectedProductsToList()
     {
-
-
-
         ArrayList<ProductModel> selectedProducts = adapter.getSelectedProducts();
         if(selectedProducts.size() == 0)
             return false;

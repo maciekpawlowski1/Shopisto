@@ -39,7 +39,7 @@
             android:parentActivityName=".main.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ChooseProductsFromGroupActivity"
+            android:name=".choose_products_from_group_activity.ChooseProductsFromGroupActivity"
             android:parentActivityName=".list_activity.ListActivity"
             android:screenOrientation="portrait" />
         <activity
