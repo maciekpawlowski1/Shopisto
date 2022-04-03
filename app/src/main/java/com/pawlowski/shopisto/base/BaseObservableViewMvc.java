@@ -15,4 +15,9 @@ public class BaseObservableViewMvc<ListenerType> extends BaseViewMvc{
     {
         listeners.remove(listener);
     }
+
+    public void clearAllListeners()
+    {
+        listeners.clear();
+    }
 }
