@@ -1,31 +1,21 @@
-package com.pawlowski.shopisto.main;
+package com.pawlowski.shopisto.main.shopping_lists_fragment;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,9 +24,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pawlowski.shopisto.MyFragmentHolder;
+import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.list_creating_activity.ListCreatingActivity;
-import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.main.MainActivity;
 import com.pawlowski.shopisto.main.products_fragment.ProductsFragment;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.ListModel;
@@ -49,24 +40,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class ShoppingListsFragment extends MyFragmentHolder {
+public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingListsFragmentViewMvc.ShoppingListsFragmentButtonsClickListener {
 
     private static final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 10;
-    RecyclerView recyclerView;
-    ShoppingListsAdapter adapter;
-    FloatingActionButton addButton;
+    private ShoppingListsAdapter adapter;
+    private final List<Boolean>downloading = new ArrayList<>();
+    private MainActivity activity;
+    private CountDownTimer stopTimer;
 
-    ImageView noListImageView;
-    TextView noListTextView;
-    List<Boolean>downloading = new ArrayList<>();
-    MainActivity activity;
-    SwipeRefreshLayout swipeRefreshLayout;
-    CountDownTimer stopTimer;
+    private boolean changingActivity = false;
 
-    boolean changingActivity = false;
+    private ShoppingListsFragmentViewMvc viewMvc;
 
 
     public ShoppingListsFragment() {
@@ -78,8 +67,6 @@ public class ShoppingListsFragment extends MyFragmentHolder {
         // Required empty public constructor
     }
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,73 +76,16 @@ public class ShoppingListsFragment extends MyFragmentHolder {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
-        recyclerView = view.findViewById(R.id.recycler_shopping_lists);
+        viewMvc = new ShoppingListsFragmentViewMvc(inflater, container);
 
         activity.getSupportActionBar().setTitle(R.string.lists);
 
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ShoppingListsAdapter(activity, this);
-        recyclerView.setAdapter(adapter);
+        viewMvc.setRecyclerAdapter(adapter);
         //adapter.setLists(DBHandler.getInstance(getActivity().getApplicationContext()).getAllLists());
 
-        addButton = view.findViewById(R.id.add_button_shopping_lists);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), ListCreatingActivity.class);
-                startActivity(i);
-                activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
-        noListImageView = view.findViewById(R.id.no_list_image_shopping_lists);
-        noListTextView = view.findViewById(R.id.no_list_text_shopping_lists);
-
-
-        noListImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), ListCreatingActivity.class);
-                startActivity(i);
-                activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
-        swipeRefreshLayout = view.findViewById(R.id.refresh_layout_shopping_lists);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(!activity.isOfflineModeOn() && canIDownload())
-                {
-                    Log.d("refresh", "Downloading");
-                    FirebaseDatabase.getInstance().goOnline();
-                    checkingIsAnyUpdateAction1();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override public void run() {
-                            if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                                swipeRefreshLayout.setRefreshing(false);
-                        }
-                    }, 5000);
-                }
-                else
-                {
-                    Log.d("refresh", "Waiting");
-
-                    if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                        swipeRefreshLayout.setRefreshing(false);
-                }
-
-            }
-        });
-
-
-
-
-
-        return view;
+        return viewMvc.getRootView();
     }
 
 
@@ -178,8 +108,7 @@ public class ShoppingListsFragment extends MyFragmentHolder {
                     }
                     else
                     {
-                        if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                            swipeRefreshLayout.setRefreshing(false);
+                        viewMvc.stopRefreshing();
                         Log.d("checking1", "nothing changed");
                         FirebaseDatabase.getInstance().goOffline();
                     }
@@ -310,8 +239,7 @@ public class ShoppingListsFragment extends MyFragmentHolder {
                     {
                         setListsTimestamp(activity, listsTimestamp);
                         loadLists();
-                        if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                            swipeRefreshLayout.setRefreshing(false);
+                        viewMvc.stopRefreshing();
                         if(!changingActivity)
                         {
                             FirebaseDatabase.getInstance().goOffline();
@@ -357,6 +285,7 @@ public class ShoppingListsFragment extends MyFragmentHolder {
     @Override
     public void onStart() {
         super.onStart();
+        viewMvc.registerListener(this);
         changingActivity = false;
         loadLists();
 
@@ -387,56 +316,20 @@ public class ShoppingListsFragment extends MyFragmentHolder {
         }
 
 
-
-                /*addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists())
-                {
-                    Set<String> lastKeys = dbHandler.getListKeysSet();
-                    Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
-                    Set<String> newKeys = map.keySet();
-
-
-                    for(String key:newKeys)
-                    {
-                        if(lastKeys.contains(key))
-                        {
-                            //Can check for update or not
-                        }
-                        else
-                        {
-                            //if(downloading.size() == 0)
-                            //activity.showProgressDialog(getString(R.string.please_wait));
-                            downloading.add(true);
-                            downloadList(key, map.get(key).toString(), userEmail, dbHandler);
-                        }
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("ShoppingListsFragment", "failed to download list timestamp");
-            }
-        });*/
-
         if(adapter.getItemCount() == 0)
         {
-            noListTextView.setVisibility(View.VISIBLE);
-            noListImageView.setVisibility(View.VISIBLE);
+            viewMvc.changeVisibilityOfNoListItem(true);
         }
         else
         {
-            noListTextView.setVisibility(View.GONE);
-            noListImageView.setVisibility(View.GONE);
+            viewMvc.changeVisibilityOfNoListItem(false);
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        viewMvc.unregisterListener(this);
         if(!changingActivity)
         {
             FirebaseDatabase.getInstance().goOffline();
@@ -444,54 +337,6 @@ public class ShoppingListsFragment extends MyFragmentHolder {
         }
 
     }
-
-    /*public void syncingAllListsAction(DataSnapshot dataSnapshot, DBHandler dbHandler, String userEmail)
-    {
-        if(dataSnapshot.exists())
-        {
-            Set<String> lastKeys = dbHandler.getListKeysSet();
-            Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-            Set<String> newKeys = map.keySet();
-
-            boolean somethingToDelete = false;
-            for(String lastKey:lastKeys)
-            {
-                if(!newKeys.contains(lastKey))
-                {
-                    //Delete list
-                    int id = dbHandler.getListIdByKey(lastKey);
-                    dbHandler.deleteList(id);
-                    somethingToDelete = true;
-
-                }
-            }
-            boolean somethingToDownload = false;
-            for(String key:newKeys)
-            {
-                if(lastKeys.contains(key))
-                {
-                    //Can check for update or not
-                }
-                else
-                {
-                    somethingToDownload = true;
-                    //if(downloading.size() == 0)
-                    //activity.showProgressDialog(getString(R.string.please_wait));
-                    downloading.add(true);
-                    downloadList(key, map.get(key).toString(), userEmail, dbHandler);
-                }
-            }
-
-            if(!somethingToDownload)
-            {
-                loadLists();
-                if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                    swipeRefreshLayout.setRefreshing(false);
-            }
-
-
-        }
-    }*/
 
     public Task<Void> downloadListWithTimestampDownloading(String listKey, String userEmail, DBHandler dbHandler, String userUid, String tittle)
     {
@@ -689,8 +534,7 @@ public class ShoppingListsFragment extends MyFragmentHolder {
 
                     loadLists();
 
-                    if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                        swipeRefreshLayout.setRefreshing(false);
+                    viewMvc.stopRefreshing();
 
                     if(!changingActivity)
                     {
@@ -713,137 +557,6 @@ public class ShoppingListsFragment extends MyFragmentHolder {
 
     }
 
-    /*public Task<Void> downloadList(String listKey, String downloadTimestamp, String userEmail, DBHandler dbHandler)
-    {
-        TaskCompletionSource<String> tittleSource = new TaskCompletionSource<>();
-        Task tittleTask = tittleSource.getTask();
-
-        TaskCompletionSource<String> ownerSource = new TaskCompletionSource<>();
-        Task ownerTask = ownerSource.getTask();
-
-        TaskCompletionSource<DataSnapshot> productsSource = new TaskCompletionSource<>();
-        Task productsTask = productsSource.getTask();
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
-
-        reference.child("l").child(listKey).child("t").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                tittleSource.setResult(snapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                tittleSource.setException(error.toException());
-            }
-        });
-
-        reference.child("lu").child(listKey).child("o").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ownerSource.setResult(snapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                ownerSource.setException(error.toException());
-            }
-        });
-
-        reference.child("p").child(listKey).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                productsSource.setResult(snapshot);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                productsSource.setException(error.toException());
-            }
-        });
-
-
-
-        return Tasks.whenAll(tittleTask, ownerTask, productsTask).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                String tittle = (String) tittleTask.getResult();
-                String owner = (String) ownerTask.getResult();
-                boolean amIOwner = owner.equals(userEmail);
-
-                DataSnapshot snapshot = (DataSnapshot) productsTask.getResult();
-                ListModel list;
-                if(snapshot.exists())
-                {
-                    //Log.d("downloading", "downloading started");
-                    Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) snapshot.getValue();
-                    Object[] mapKeys = map.keySet().toArray();
-                    List<ProductModel> newProducts = new ArrayList<>();
-                    int numberSelected = 0;
-                    for(Object o:mapKeys)
-                    {
-                        //Log.d("downloading", o.toString());
-                        Map<String, Object>productMap = (Map<String, Object>) map.get(o.toString());
-
-                        int number = 1;
-                        if(productMap.containsKey("n"))
-                            number = Integer.parseInt(productMap.get("n").toString());
-
-                        String description = "";
-                        if(productMap.containsKey("d"))
-                            description = productMap.get("d").toString();
-
-                        boolean selected = Boolean.parseBoolean(productMap.get("s").toString());
-                        if(selected)
-                            numberSelected++;
-
-                        int category = 0;
-                        if(productMap.containsKey("c"))
-                            category = Integer.parseInt(productMap.get("c").toString());
-
-                        ProductModel product = new ProductModel(o.toString(), description, selected, number);
-                        product.setCategoryId(category);
-                        newProducts.add(product);
-                        //Log.d("downloading", product.toString());
-                    }
-
-                    list = new ListModel(tittle, numberSelected, newProducts.size(), newProducts);
-
-                }
-                else
-                {
-                    list = new ListModel(tittle, 0, 0, new ArrayList<>());
-                }
-
-
-                list.setFirebaseKey(listKey);
-                list.setDownloadTimestamp(downloadTimestamp);
-                list.setAmIOwner(amIOwner);
-                list.setFriendsTimestamp("-1");
-                dbHandler.insertList(list);
-
-                if(downloading.size() == 1)
-                {
-
-                    loadLists();
-
-                    if(swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing())
-                        swipeRefreshLayout.setRefreshing(false);
-
-                }
-                downloading.remove(0);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("downloading", "Downloading failed");
-            }
-        });
-
-
-
-    }*/
 
     public void loadLists()
     {
@@ -859,19 +572,17 @@ public class ShoppingListsFragment extends MyFragmentHolder {
 
     public void showNoListImage()
     {
-        noListTextView.setVisibility(View.VISIBLE);
-        noListImageView.setVisibility(View.VISIBLE);
+        viewMvc.changeVisibilityOfNoListItem(true);
     }
 
     public void hideNoListImage()
     {
-        noListTextView.setVisibility(View.GONE);
-        noListImageView.setVisibility(View.GONE);
+        viewMvc.changeVisibilityOfNoListItem(false);
     }
 
     public void scrollToTheStarting()
     {
-        recyclerView.scrollToPosition(0);
+        viewMvc.scrollToRecyclerTop();
     }
 
     public void setChangingActivityTrue()
@@ -880,6 +591,38 @@ public class ShoppingListsFragment extends MyFragmentHolder {
     }
 
 
+    @Override
+    public void onAddButtonClick() {
+        Intent i = new Intent(getActivity(), ListCreatingActivity.class);
+        startActivity(i);
+        activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
 
+    @Override
+    public void onNoListItemClick() {
+        Intent i = new Intent(getActivity(), ListCreatingActivity.class);
+        startActivity(i);
+        activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
 
+    @Override
+    public void onSwipeRefresh() {
+        if(!activity.isOfflineModeOn() && canIDownload())
+        {
+            Log.d("refresh", "Downloading");
+            FirebaseDatabase.getInstance().goOnline();
+            checkingIsAnyUpdateAction1();
+            new Handler().postDelayed(new Runnable() {
+                @Override public void run() {
+                    viewMvc.stopRefreshing();
+                }
+            }, 5000);
+        }
+        else
+        {
+            Log.d("refresh", "Waiting");
+
+            viewMvc.stopRefreshing();
+        }
+    }
 }

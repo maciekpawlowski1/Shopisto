@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
-import com.pawlowski.shopisto.main.ShoppingListsFragment;
+import com.pawlowski.shopisto.main.shopping_lists_fragment.ShoppingListsFragment;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.GroupModel;
 import com.pawlowski.shopisto.models.ListModel;

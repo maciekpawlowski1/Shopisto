@@ -11,7 +11,7 @@ import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.list_activity.ListActivity;
-import com.pawlowski.shopisto.main.ShoppingListsFragment;
+import com.pawlowski.shopisto.main.shopping_lists_fragment.ShoppingListsFragment;
 import com.pawlowski.shopisto.models.ListModel;
 
 import java.util.Calendar;

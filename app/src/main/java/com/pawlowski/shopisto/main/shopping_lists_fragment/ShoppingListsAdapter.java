@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto.main;
+package com.pawlowski.shopisto.main.shopping_lists_fragment;
 
 import android.content.Context;
 import android.content.Intent;
