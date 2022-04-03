@@ -30,6 +30,7 @@ import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.main.products_fragment.ProductsFragment;
+import com.pawlowski.shopisto.main.restore_fragment.RestoreFragment;
 
 import java.util.Calendar;
 import java.util.Date;

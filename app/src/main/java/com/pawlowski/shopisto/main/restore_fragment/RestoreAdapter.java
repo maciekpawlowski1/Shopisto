@@ -1,7 +1,6 @@
-package com.pawlowski.shopisto.main;
+package com.pawlowski.shopisto.main.restore_fragment;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
+import com.pawlowski.shopisto.main.ShoppingListsFragment;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.GroupModel;
 import com.pawlowski.shopisto.models.ListModel;

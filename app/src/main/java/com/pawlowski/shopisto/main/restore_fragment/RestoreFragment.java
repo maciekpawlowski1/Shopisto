@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto.main;
+package com.pawlowski.shopisto.main.restore_fragment;
 
 import android.os.Bundle;
 
@@ -13,15 +13,15 @@ import android.view.ViewGroup;
 
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
+import com.pawlowski.shopisto.main.MainActivity;
 
 
 public class RestoreFragment extends Fragment {
 
-    RecyclerView recycler;
-    RestoreAdapter adapter;
+    private RestoreAdapter adapter;
+    private MainActivity activity;
 
-    ConstraintLayout nothingInTrashConstraint;
-    MainActivity activity;
+    private RestoreFragmentViewMvc viewMvc;
 
     public RestoreFragment() {
         // Required empty public constructor
@@ -42,31 +42,25 @@ public class RestoreFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_restore, container, false);
-
-        nothingInTrashConstraint = view.findViewById(R.id.no_lists_in_trash_constraint_trash);
-        nothingInTrashConstraint.setVisibility(View.GONE);
+        viewMvc = new RestoreFragmentViewMvc(inflater, container);
 
         adapter = new RestoreAdapter(getActivity(), this, activity.isOfflineModeOn());
 
-        recycler = view.findViewById(R.id.recycler_restore_fragment);
-        recycler.setAdapter(adapter);
-        recycler.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        viewMvc.setRecyclerAdapter(adapter);
 
         activity.getSupportActionBar().setTitle(R.string.trash);
 
-        return view;
+        return viewMvc.getRootView();
     }
 
     public void showNothingInTrashImage()
     {
-        nothingInTrashConstraint.setVisibility(View.VISIBLE);
+        viewMvc.setNothingInTrashConstraintVisibility(true);
     }
 
     public void hideNothingInTrashImage()
     {
-        nothingInTrashConstraint.setVisibility(View.GONE);
+        viewMvc.setNothingInTrashConstraintVisibility(false);
     }
 
     @Override
