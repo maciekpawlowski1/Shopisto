@@ -14,7 +14,7 @@ import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.list_activity.ListActivity;
-import com.pawlowski.shopisto.main.ProductsFragment;
+import com.pawlowski.shopisto.main.products_fragment.ProductsFragment;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.Calendar;

@@ -1,4 +1,4 @@
-package com.pawlowski.shopisto.main;
+package com.pawlowski.shopisto.main.products_fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,6 +24,8 @@ import com.pawlowski.shopisto.add_group_activity.AddGroupActivity;
 import com.pawlowski.shopisto.MyFragmentHolder;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
+import com.pawlowski.shopisto.main.MainActivity;
+import com.pawlowski.shopisto.main.ProductGroupsAdapter;
 import com.pawlowski.shopisto.models.GroupModel;
 import com.pawlowski.shopisto.models.ProductModel;
 
@@ -41,15 +43,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class ProductsFragment extends MyFragmentHolder {
+public class ProductsFragment extends MyFragmentHolder implements ProductsFragmentViewMvc.ProductsFragmentButtonsClickListener {
 
     private static final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 300;
-    RecyclerView recyclerView;
     ProductGroupsAdapter adapter;
-    FloatingActionButton addButton;
 
-    ImageView noGroupsImage;
-    TextView noGroupsText;
     boolean changingActivity = false;
     //SwipeRefreshLayout swipeRefreshLayout;
 
@@ -58,6 +56,8 @@ public class ProductsFragment extends MyFragmentHolder {
     CountDownTimer stopTimer;
 
     MainActivity activity;
+
+    private ProductsFragmentViewMvc viewMvc;
 
     public ProductsFragment() {
         // Required empty public constructor
@@ -75,55 +75,21 @@ public class ProductsFragment extends MyFragmentHolder {
 
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_products, container, false);
-
-        recyclerView = view.findViewById(R.id.recycler_groups);
-        addButton = view.findViewById(R.id.add_button_groups);
+        viewMvc = new ProductsFragmentViewMvc(inflater, container);
 
         adapter = new ProductGroupsAdapter(activity, false, -1, this);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
-
-        noGroupsImage = view.findViewById(R.id.no_groups_image_groups);
-        noGroupsText = view.findViewById(R.id.no_groups_text_groups);
-        noGroupsText.setVisibility(View.GONE);
-        noGroupsImage.setVisibility(View.GONE);
+        viewMvc.setRecyclerAdapter(adapter);
+        viewMvc.hideNoGroupsItems();
 
         activity.getSupportActionBar().setTitle(R.string.templates);
 
-
-
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //DBHandler.getInstance(getActivity().getApplicationContext()).insertGroup(new GroupModel("Spaghetti"));
-                navigateToAddingGroupsAction();
-            }
-        });
-
-        noGroupsImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToAddingGroupsAction();
-            }
-        });
-
-
-
-        return view;
+        return viewMvc.getRootView();
     }
 
-    public void showNoGroupsImage()
-    {
-        noGroupsText.setVisibility(View.VISIBLE);
-        noGroupsImage.setVisibility(View.VISIBLE);
-    }
 
     public void navigateToAddingGroupsAction()
     {
@@ -133,16 +99,26 @@ public class ProductsFragment extends MyFragmentHolder {
 
     }
 
-    public void hideNoGroupsImage()
+    public void showNoGroupsItems()
     {
-        noGroupsText.setVisibility(View.GONE);
-        noGroupsImage.setVisibility(View.GONE);
+        viewMvc.showNoGroupsItems();
+    }
+
+    public void hideNoGroupsItems()
+    {
+        viewMvc.hideNoGroupsItems();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        viewMvc.unregisterListener(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
+        viewMvc.registerListener(this);
         stopTimer = new CountDownTimer(10000, 10000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -187,20 +163,19 @@ public class ProductsFragment extends MyFragmentHolder {
     {
         adapter.setGroups(DBHandler.getInstance(getActivity().getApplicationContext()).getAllGroups());
         if(adapter.getItemCount() == 0)
-            showNoGroupsImage();
+            viewMvc.showNoGroupsItems();
         else
-            hideNoGroupsImage();
+            viewMvc.hideNoGroupsItems();
     }
 
     public void scrollToTheStarting()
     {
-        recyclerView.scrollToPosition(0);
+        viewMvc.scrollToRecyclerTop();
     }
 
 
     public boolean canIDownload()
     {
-        //Log.d("canICownload", "Checking");
         Date date = Calendar.getInstance().getTime();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("lastDownloadPreferences", MODE_PRIVATE);
         long lastDownload = sharedPreferences.getLong("lastGroupsDownload", 0);
@@ -216,7 +191,6 @@ public class ProductsFragment extends MyFragmentHolder {
 
     public static boolean wasRecentlyLogOut(Activity activity, int seconds)
     {
-        //Log.d("canICownload", "Checking");
         Date date = Calendar.getInstance().getTime();
         SharedPreferences sharedPreferences = activity.getSharedPreferences("lastDownloadPreferences", MODE_PRIVATE);
         long lastDownload = sharedPreferences.getLong("lastLogOut", 0);
@@ -515,5 +489,15 @@ public class ProductsFragment extends MyFragmentHolder {
 
 
 
+    }
+
+    @Override
+    public void onAddButtonClick() {
+        navigateToAddingGroupsAction();
+    }
+
+    @Override
+    public void onNoGroupsItemClick() {
+        navigateToAddingGroupsAction();
     }
 }

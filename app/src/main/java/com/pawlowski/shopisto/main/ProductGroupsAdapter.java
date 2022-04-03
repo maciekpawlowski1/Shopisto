@@ -22,6 +22,7 @@ import com.pawlowski.shopisto.choose_products_from_group_activity.ChooseProducts
 import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
+import com.pawlowski.shopisto.main.products_fragment.ProductsFragment;
 import com.pawlowski.shopisto.models.GroupModel;
 import com.pawlowski.shopisto.R;
 
@@ -322,14 +323,14 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
         groups.remove(position);
         notifyDataSetChanged();
         if(groups.size() == 0)
-            ((ProductsFragment)fragment).showNoGroupsImage();
+            ((ProductsFragment)fragment).showNoGroupsItems();
 
         DBHandler.getInstance(activity.getApplicationContext()).moveGroupToTrash(deletedGroup.getId());
         Snackbar.make(view, activity.getString(R.string.group_deleted), Snackbar.LENGTH_LONG).setAction(activity.getString(R.string.undo), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(groups.size() == 0)
-                    ((ProductsFragment)fragment).hideNoGroupsImage();
+                    ((ProductsFragment)fragment).hideNoGroupsItems();
                 groups.add(position, deletedGroup);
                 notifyDataSetChanged();
                 DBHandler.getInstance(activity.getApplicationContext()).restoreGroupFromTrash(deletedGroup.getId());

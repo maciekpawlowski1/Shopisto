@@ -37,6 +37,7 @@ import com.pawlowski.shopisto.MyFragmentHolder;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.list_creating_activity.ListCreatingActivity;
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.main.products_fragment.ProductsFragment;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.ListModel;
 import com.pawlowski.shopisto.models.ProductModel;
