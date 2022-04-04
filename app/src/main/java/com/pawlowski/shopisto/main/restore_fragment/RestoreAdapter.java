@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.base.BaseObservableViewMvc;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.main.shopping_lists_fragment.ShoppingListsFragment;
@@ -24,7 +25,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreCardHolder> {
+public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreCardHolder> implements RestoreListItemViewMvc.RestoreListItemButtonsClickListener, RestoreGroupItemViewMvc.RestoreGroupItemButtonsClickListener {
 
     List<Model> listsAndGroups = new ArrayList<>();
     Activity activity;
@@ -41,18 +42,14 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
     @NonNull
     @Override
     public RestoreCardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
         if(viewType == 1)
         {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.restore_list_card,
-                    parent, false);
+            return new RestoreCardHolder(new RestoreListItemViewMvc(LayoutInflater.from(parent.getContext()), parent));
         }
         else
         {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.restore_group_card,
-                    parent, false);
+            return new RestoreCardHolder(new RestoreGroupItemViewMvc(LayoutInflater.from(parent.getContext()), parent));
         }
-        return new RestoreCardHolder(view);
     }
 
     @Override
@@ -60,120 +57,17 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
         Model currentListOrGroup = listsAndGroups.get(position);
         if(currentListOrGroup.isItList())
         {
+            holder.listViewMvc.clearAllListeners();
             ListModel currentList = (ListModel)currentListOrGroup;
-            holder.listTittleText.setText(currentList.getTittle());
-
-            if(currentList.getNumberAll() != 0)
-            {
-                holder.progressBar.setProgress(100*currentList.getNumberSelected()/currentList.getNumberAll());
-            }
-            else
-            {
-                holder.progressBar.setProgress(0);
-            }
-            holder.progressText.setText(currentList.getNumberSelected()+"/"+currentList.getNumberAll());
-
-            holder.undoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String tittle = currentList.getTittle();
-                    DBHandler.getInstance(activity.getApplicationContext()).restoreListFromTrash(currentList.getId());
-                    listsAndGroups.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, listsAndGroups.size()-position+1);
-                    Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.list_has_been_succesfully_restored) +
-                            " " + tittle, Toast.LENGTH_SHORT).show();
-
-
-                    if(listsAndGroups.size() == 0)
-                    {
-                        restoreFragment.showNothingInTrashImage();
-                    }
-                }
-            });
-
-            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    List<FriendModel>friendsFromList = DBHandler.getInstance(activity.getApplicationContext())
-                            .getFriendsWithoutNicknamesFromThisList(currentList.getId());
-
-
-
-                    String tittle = currentList.getTittle();
-                    ShoppingListsFragment.increaseListTimestamp(activity);
-                    if(!offlineMode)
-                    {
-                        OnlineDBHandler.removeYourselfFromList(currentList.getFirebaseKey());
-                        OnlineDBHandler.makeChangesInListFriends(currentList.getFirebaseKey(), friendsFromList);
-                    }
-
-                    DBHandler.getInstance(activity.getApplicationContext()).deleteList(currentList.getId());
-                    listsAndGroups.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, listsAndGroups.size()-position+1);
-
-                    Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.list_has_been_deleted_1) +
-                            " " + tittle + " " + activity.getString(R.string.list_has_been_deleted_2), Toast.LENGTH_SHORT).show();
-
-
-                    if(listsAndGroups.size() == 0)
-                    {
-                        restoreFragment.showNothingInTrashImage();
-                    }
-                }
-            });
-
-
+            holder.listViewMvc.bindItem(currentList, position);
+            holder.listViewMvc.registerListener(this);
         }
         else
         {
+            holder.groupViewMvc.clearAllListeners();
             GroupModel currentGroup = (GroupModel) currentListOrGroup;
-            holder.groupTittleText.setText(currentGroup.getTittle());
-            holder.groupNumberText.setText(currentGroup.getProducts().size()+" " + activity.getString(R.string.xx_products));
-
-
-            holder.groupUndoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String tittle = currentGroup.getTittle();
-                    DBHandler.getInstance(activity.getApplicationContext()).restoreGroupFromTrash(currentGroup.getId());
-                    listsAndGroups.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, listsAndGroups.size()-position+1);
-                    Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.group_has_been_succesfully_restored) +
-                            " " + tittle, Toast.LENGTH_SHORT).show();
-
-
-                    if(listsAndGroups.size() == 0)
-                    {
-                        restoreFragment.showNothingInTrashImage();
-                    }
-                }
-            });
-
-            holder.groupDeleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String tittle = currentGroup.getTittle();
-                    if(!offlineMode)
-                        OnlineDBHandler.deleteGroup(currentGroup.getKey());
-
-                    DBHandler.getInstance(activity.getApplicationContext()).deleteGroup(currentGroup.getId());
-                    listsAndGroups.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, listsAndGroups.size()-position+1);
-                    Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.group_has_been_deleted_1) +
-                            " " + tittle + " " + activity.getString(R.string.group_has_been_deleted_2), Toast.LENGTH_SHORT).show();
-
-
-                    if(listsAndGroups.size() == 0)
-                    {
-                        restoreFragment.showNothingInTrashImage();
-                    }
-                }
-            });
-
+            holder.groupViewMvc.bindItem(currentGroup, position);
+            holder.groupViewMvc.registerListener(this);
         }
 
     }
@@ -198,32 +92,106 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
             return 2;
     }
 
+    @Override
+    public void onListUndoClick(ListModel currentList, int currentPosition) {
+        String tittle = currentList.getTittle();
+        DBHandler.getInstance(activity.getApplicationContext()).restoreListFromTrash(currentList.getId());
+        listsAndGroups.remove(currentPosition);
+        notifyItemRemoved(currentPosition);
+        notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
+        Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.list_has_been_succesfully_restored) +
+                " " + tittle, Toast.LENGTH_SHORT).show();
+
+
+        if(listsAndGroups.size() == 0)
+        {
+            restoreFragment.showNothingInTrashImage();
+        }
+    }
+
+    @Override
+    public void onListDeleteClick(ListModel currentList, int currentPosition) {
+        List<FriendModel>friendsFromList = DBHandler.getInstance(activity.getApplicationContext())
+                .getFriendsWithoutNicknamesFromThisList(currentList.getId());
+
+
+
+        String tittle = currentList.getTittle();
+        ShoppingListsFragment.increaseListTimestamp(activity);
+        if(!offlineMode)
+        {
+            OnlineDBHandler.removeYourselfFromList(currentList.getFirebaseKey());
+            OnlineDBHandler.makeChangesInListFriends(currentList.getFirebaseKey(), friendsFromList);
+        }
+
+        DBHandler.getInstance(activity.getApplicationContext()).deleteList(currentList.getId());
+        listsAndGroups.remove(currentPosition);
+        notifyItemRemoved(currentPosition);
+        notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
+
+        Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.list_has_been_deleted_1) +
+                " " + tittle + " " + activity.getString(R.string.list_has_been_deleted_2), Toast.LENGTH_SHORT).show();
+
+
+        if(listsAndGroups.size() == 0)
+        {
+            restoreFragment.showNothingInTrashImage();
+        }
+    }
+
+    @Override
+    public void onGroupUndoClick(GroupModel currentGroup, int currentPosition) {
+        String tittle = currentGroup.getTittle();
+        DBHandler.getInstance(activity.getApplicationContext()).restoreGroupFromTrash(currentGroup.getId());
+        listsAndGroups.remove(currentPosition);
+        notifyItemRemoved(currentPosition);
+        notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
+        Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.group_has_been_succesfully_restored) +
+                " " + tittle, Toast.LENGTH_SHORT).show();
+
+
+        if(listsAndGroups.size() == 0)
+        {
+            restoreFragment.showNothingInTrashImage();
+        }
+    }
+
+    @Override
+    public void onGroupDeleteClick(GroupModel currentGroup, int currentPosition) {
+        String tittle = currentGroup.getTittle();
+        if(!offlineMode)
+            OnlineDBHandler.deleteGroup(currentGroup.getKey());
+
+        DBHandler.getInstance(activity.getApplicationContext()).deleteGroup(currentGroup.getId());
+        listsAndGroups.remove(currentPosition);
+        notifyItemRemoved(currentPosition);
+        notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
+        Toast.makeText(activity.getApplicationContext(), activity.getString(R.string.group_has_been_deleted_1) +
+                " " + tittle + " " + activity.getString(R.string.group_has_been_deleted_2), Toast.LENGTH_SHORT).show();
+
+
+        if(listsAndGroups.size() == 0)
+        {
+            restoreFragment.showNothingInTrashImage();
+        }
+    }
+
     class RestoreCardHolder extends RecyclerView.ViewHolder
     {
-        TextView listTittleText;
-        TextView progressText;
-        ProgressBar progressBar;
-        Button undoButton;
-        Button deleteButton;
+        RestoreListItemViewMvc listViewMvc;
+        RestoreGroupItemViewMvc groupViewMvc;
 
-        TextView groupTittleText;
-        TextView groupNumberText;
-        Button groupUndoButton;
-        Button groupDeleteButton;
+        public <ListenerType, ModelType> RestoreCardHolder(@NonNull BaseRestoreItemViewMvc<ListenerType, ModelType> viewMvc)  {
+            super(viewMvc.getRootView());
 
-        public RestoreCardHolder(@NonNull View itemView) {
-            super(itemView);
-
-            listTittleText = itemView.findViewById(R.id.tittle_restore_list_card);
-            progressText = itemView.findViewById(R.id.text_progress_restore_list_card);
-            progressBar = itemView.findViewById(R.id.progress_bar_restore_list_card);
-            undoButton = itemView.findViewById(R.id.undo_button_restore_list_card);
-            deleteButton = itemView.findViewById(R.id.delete_button_restore_list_card);
-
-            groupDeleteButton = itemView.findViewById(R.id.delete_button_restore_group_card);
-            groupUndoButton = itemView.findViewById(R.id.undo_button_restore_group_card);
-            groupTittleText = itemView.findViewById(R.id.tittle_restore_group_card);
-            groupNumberText = itemView.findViewById(R.id.number_restore_group_card);
+            if (viewMvc instanceof RestoreListItemViewMvc)
+            {
+                listViewMvc = (RestoreListItemViewMvc) viewMvc;
+            }
+            else if (viewMvc instanceof RestoreGroupItemViewMvc)
+            {
+                groupViewMvc = (RestoreGroupItemViewMvc) viewMvc;
+            }
 
 
         }

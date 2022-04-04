@@ -28,7 +28,7 @@ public class ShoppingListsFragmentItemViewMvc extends BaseObservableViewMvc<Shop
     private final ConstraintLayout constraintLayout;
     private final ImageButton moreButton;
     private final EditText editTittle;
-    private final ImageButton finishEdittingButton;
+    private final ImageButton finishEditingButton;
 
     private ListModel currentList;
     private int currentPosition;
@@ -42,7 +42,7 @@ public class ShoppingListsFragmentItemViewMvc extends BaseObservableViewMvc<Shop
         constraintLayout = findViewById(R.id.layout_shopping_list_card);
         moreButton = findViewById(R.id.more_button_shopping_list_card);
         editTittle = findViewById(R.id.edit_tittle_shopping_list_card);
-        finishEdittingButton = findViewById(R.id.stop_editting_button_shopping_lists);
+        finishEditingButton = findViewById(R.id.stop_editting_button_shopping_lists);
 
         constraintLayout.setOnClickListener(v -> {
             for(ShoppingListsFragmentItemButtonsClickListener l:listeners)
@@ -51,7 +51,7 @@ public class ShoppingListsFragmentItemViewMvc extends BaseObservableViewMvc<Shop
             }
         });
 
-        finishEdittingButton.setOnClickListener(v -> {
+        finishEditingButton.setOnClickListener(v -> {
             for(ShoppingListsFragmentItemButtonsClickListener l:listeners)
             {
                 l.onFinishEditingClick(currentList, currentPosition, ShoppingListsFragmentItemViewMvc.this);
@@ -93,7 +93,7 @@ public class ShoppingListsFragmentItemViewMvc extends BaseObservableViewMvc<Shop
         this.currentPosition = position;
         editTittle.setVisibility(View.INVISIBLE);
         editTittle.setText("");
-        finishEdittingButton.setVisibility(View.INVISIBLE);
+        finishEditingButton.setVisibility(View.INVISIBLE);
         listTittleText.setVisibility(View.VISIBLE);
         listTittleText.setText(list.getTittle());
         productsReadyText.setText(list.getNumberSelected() + "/" + list.getNumberAll());
@@ -149,7 +149,7 @@ public class ShoppingListsFragmentItemViewMvc extends BaseObservableViewMvc<Shop
         listTittleText.setVisibility(View.INVISIBLE);
         editTittle.setText(currentList.getTittle());
         editTittle.setVisibility(View.VISIBLE);
-        finishEdittingButton.setVisibility(View.VISIBLE);
+        finishEditingButton.setVisibility(View.VISIBLE);
 
         editTittle.requestFocus();
         editTittle.setSelection(currentList.getTittle().length());
