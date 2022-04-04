@@ -4,16 +4,9 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.ScaleAnimation;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.group_activity.ProductsInGroupAdapter;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
@@ -23,16 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder> {
+public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder> implements ListItemViewMvc.ListItemButtonsClickListener {
 
     ArrayList<ProductModel>products = new ArrayList<>();
 
-    private Activity activity;
-    private int listId;
+    private final Activity activity;
+    private final int listId;
     int positionSelected = -1;
     String listKey;
     boolean offlineMode = false;
@@ -51,9 +42,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     @NonNull
     @Override
     public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_in_list_card,
-                parent, false);
-        return new ProductHolder(view);
+
+        return new ProductHolder(new ListItemViewMvc(LayoutInflater.from(parent.getContext()), parent));
     }
 
 
@@ -61,189 +51,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     @Override
     public void onBindViewHolder(@NonNull ListAdapter.ProductHolder holder, int position) {
         ProductModel currentProduct = products.get(position);
-        holder.tittleText.setText(currentProduct.getTittle());
-        /*holder.tittleText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("pozycja", position+"");
-            }
-        });*/
-
-
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if(!positionsSelected.get(position))
-                {
-                    selectProduct(position);
-                }
-                else
-                {
-                    unselectProduct(position);
-                }
-
-                return true;
-            }
-        });
-
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isSomethingSelected())
-                {
-                    if(positionsSelected.get(position))
-                    {
-                        unselectProduct(position);
-                    }
-                    else
-                        selectProduct(position);
-                }
-            }
-        });
-
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isSomethingSelected())
-                {
-                    if(positionsSelected.get(position))
-                    {
-                        unselectProduct(position);
-                    }
-                    else
-                        selectProduct(position);
-                }
-            }
-        });
-
-
-        holder.descriptionText.setText(currentProduct.getDescription());
-        holder.numberText.setText(currentProduct.getNumber()+"");
-        holder.checkBox.setChecked(currentProduct.isSelected());
-        if(currentProduct.isSelected())
-        {
-            holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.card_backgroubd_color2));
-            holder.imageView.setAlpha(0.6f);
-            holder.tittleText.setAlpha(0.7f);
-            holder.numberText.setAlpha(0.7f);
-            //holder.tittleText.set
-        }
-        else
-        {
-            holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.white));
-            holder.imageView.setAlpha(1.0f);
-            holder.tittleText.setAlpha(1.0f);
-            holder.numberText.setAlpha(1.0f);
-        }
-
-
-        if(positionsSelected.get(position))
-        {
-            holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.selected_color));
-            holder.checkBox.setEnabled(false);
-        }
-        else
-        {
-            holder.checkBox.setEnabled(true);
-        }
-        //Log.d("test", currentProduct.isSelected()+"");
-        holder.checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-
-                if(isSomethingSelected())
-                {
-                    unselectAllProducts();
-
-                    holder.checkBox.setChecked(!holder.checkBox.isChecked());
-                    return;
-                }
-
-                ScaleAnimation scaleAnimation;
-                BounceInterpolator bounceInterpolator;
-                scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
-                scaleAnimation.setDuration(500);
-                bounceInterpolator = new BounceInterpolator();
-                scaleAnimation.setInterpolator(bounceInterpolator);
-                holder.checkBox.startAnimation(scaleAnimation);
-                holder.cardView.startAnimation(scaleAnimation);
-
-                boolean isSelected = holder.checkBox.isChecked();
-                //Log.d("selected", isSelected+"");
-                currentProduct.setSelected(isSelected);
-
-                if(!offlineMode)
-                {
-                    doGoOnlineForAMoment();
-                    OnlineDBHandler.setSelectionOfProduct(listKey, currentProduct, ((ListActivity)activity).getFriendsFromList());
-                }
-
-
-
-                DBHandler.getInstance(activity.getApplicationContext()).updateListNumberSelected(listId, isSelected);
-                DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
-                int from;
-                int to;
-                if(products.size() > 1)
-                {
-                    /*if(isSelected)
-                    {
-                        //from = position;
-                        from = products.indexOf(currentProduct);
-                        //to = products.size()-1;
-                        to = getNewPositionForProduct(currentProduct.getTittle(), true, currentProduct.getCategoryId());
-                        products.add(currentProduct);
-                        products.remove(currentProduct);
-                    }
-                    else
-                    {
-                        from = products.indexOf(currentProduct);
-                        to = getNewPositionForProduct(currentProduct.getTittle(), false, currentProduct.getCategoryId());
-                        products.remove(currentProduct);
-                        products.add(0, currentProduct);
-                    }*/
-                    from = products.indexOf(currentProduct);
-                    products.remove(from);
-                    to = getNewPositionForProduct(currentProduct.getTittle(), isSelected, currentProduct.getCategoryId());
-
-                    products.add(to, currentProduct);
-
-
-
-                    notifyItemMoved(from, to);
-                    if(from > to)
-                    {
-                        notifyItemRangeChanged(to, from-to+1);
-                    }
-                    else
-                    {
-                        notifyItemRangeChanged(from, to-from+1);
-                    }
-
-                }
-
-
-
-
-                //Log.d("checkboxy", currentProduct.getId()+"");
-            }
-        });
-
-        ProductsInGroupAdapter.changeCategoryImageDependingOnCategory(holder.imageView, currentProduct.getCategoryId());
-
-
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!isSomethingSelected())
-                    ((ListActivity)activity).editAction(false, currentProduct);
-            }
-        });
-
-
-
+        holder.viewMvc.clearAllListeners();
+        holder.viewMvc.bindProduct(currentProduct, position, positionsSelected.get(position));
+        holder.viewMvc.registerListener(this);
     }
 
     @Override
@@ -277,33 +87,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
         }
         else
         {
-            /*for(int i=products.size()-1;i>0;i--)
-            {
-                ProductModel p = products.get(i);
-                if(!p.isSelected() && p.getCategoryId() <= categoryId)
-                {
-                    if(p.getCategoryId() == categoryId)
-                    {
-                        if(p.getTittle().compareTo(tittle) > 0)
-                        {
-                            return i;
-                        }
-                    }
-                    else
-                    {
-                        ProductModel previousProduct = products.get(i-1);
-                        int previousId = previousProduct.getCategoryId();
-                        if(previousId != categoryId)
-                            return i;
-                        else if(previousProduct.getTittle().compareTo(tittle) < 0)
-                        {
-                            return i;
-                        }
-                    }
 
-                }
-            }
-            return 0;*/
             boolean everythingSelected = true;
             int border = products.size();
             for(int i=0;i<products.size();i++)
@@ -523,26 +307,110 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
 
     }
 
+    @Override
+    public void onCardClick(int currentPosition) {
+        if(isSomethingSelected())
+        {
+            if(positionsSelected.get(currentPosition))
+            {
+                unselectProduct(currentPosition);
+            }
+            else
+                selectProduct(currentPosition);
+        }
+    }
+
+    @Override
+    public void onCardLongClick(int currentPosition) {
+
+        if(!positionsSelected.get(currentPosition))
+        {
+            selectProduct(currentPosition);
+        }
+        else
+        {
+            unselectProduct(currentPosition);
+        }
+    }
+
+    @Override
+    public void onConstraintClick(int currentPosition) {
+        if(isSomethingSelected())
+        {
+            if(positionsSelected.get(currentPosition))
+            {
+                unselectProduct(currentPosition);
+            }
+            else
+                selectProduct(currentPosition);
+        }
+    }
+
+    @Override
+    public void onImageClick(ProductModel currentProduct) {
+        if(!isSomethingSelected())
+            ((ListActivity)activity).editAction(false, currentProduct);
+    }
+
+    @Override
+    public void onCheckBoxClick(ProductModel currentProduct, ListItemViewMvc viewMvc) {
+        if(isSomethingSelected())
+        {
+            unselectAllProducts();
+            viewMvc.changeCheckedOfCheckBox();
+
+            return;
+        }
+
+        viewMvc.animateCheckBox();
+
+        boolean isSelected = viewMvc.isCheckBoxChecked();
+        //Log.d("selected", isSelected+"");
+        currentProduct.setSelected(isSelected);
+
+        if(!offlineMode)
+        {
+            doGoOnlineForAMoment();
+            OnlineDBHandler.setSelectionOfProduct(listKey, currentProduct, ((ListActivity)activity).getFriendsFromList());
+        }
+
+
+
+        DBHandler.getInstance(activity.getApplicationContext()).updateListNumberSelected(listId, isSelected);
+        DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
+        int from;
+        int to;
+        if(products.size() > 1)
+        {
+
+            from = products.indexOf(currentProduct);
+            products.remove(from);
+            to = getNewPositionForProduct(currentProduct.getTittle(), isSelected, currentProduct.getCategoryId());
+
+            products.add(to, currentProduct);
+
+
+
+            notifyItemMoved(from, to);
+            if(from > to)
+            {
+                notifyItemRangeChanged(to, from-to+1);
+            }
+            else
+            {
+                notifyItemRangeChanged(from, to-from+1);
+            }
+
+        }
+    }
 
 
     class ProductHolder extends RecyclerView.ViewHolder
     {
-        TextView tittleText;
-        TextView descriptionText;
-        TextView numberText;
-        ImageView imageView;
-        CheckBox checkBox;
-        CardView cardView;
-        ConstraintLayout constraintLayout;
-        public ProductHolder(@NonNull View itemView) {
-            super(itemView);
-            tittleText = itemView.findViewById(R.id.tittle_list_card);
-            descriptionText = itemView.findViewById(R.id.description_list_card);
-            numberText = itemView.findViewById(R.id.number_list_card);
-            imageView = itemView.findViewById(R.id.image_list_card);
-            checkBox = itemView.findViewById(R.id.check_box_list_card);
-            cardView = itemView.findViewById(R.id.card_view_product_in_list_card);
-            constraintLayout = itemView.findViewById(R.id.constaint_layout_product_in_list_card);
+        ListItemViewMvc viewMvc;
+        public ProductHolder(@NonNull ListItemViewMvc viewMvc) {
+            super(viewMvc.getRootView());
+            this.viewMvc = viewMvc;
         }
     }
 }
