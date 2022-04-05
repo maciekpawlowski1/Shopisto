@@ -1,5 +1,6 @@
 package com.pawlowski.shopisto.choose_group_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import com.pawlowski.shopisto.add_group_activity.AddGroupActivity;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.main.ProductGroupsAdapter;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import androidx.annotation.NonNull;
 
@@ -18,6 +20,14 @@ public class ChooseGroupActivity extends BaseActivity implements ChooseGroupView
 
     private ProductGroupsAdapter adapter;
     private ChooseGroupViewMvc viewMvc;
+
+    public static void launch(Context context, int listId, String listKey)
+    {
+        Intent i = new Intent(context, ChooseGroupActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listKey", listKey);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +69,7 @@ public class ChooseGroupActivity extends BaseActivity implements ChooseGroupView
 
     public void navigateToCreatingGroupAction()
     {
-        Intent i = new Intent(ChooseGroupActivity.this, AddGroupActivity.class);
-        startActivity(i);
+        AddGroupActivity.launch(this);
         finish();
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }

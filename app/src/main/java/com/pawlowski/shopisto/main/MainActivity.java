@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,6 +46,12 @@ public class MainActivity extends BaseActivity {
     MyFragmentHolder fragmentHolder = null;
     TextView mailInHeader;
     AdView mAdView;
+
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, MainActivity.class);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +157,7 @@ public class MainActivity extends BaseActivity {
             mailInHeader.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(i);
+                    LoginActivity.launch(MainActivity.this);
                     overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                     //finish();
                 }
@@ -204,8 +210,7 @@ public class MainActivity extends BaseActivity {
         switch (item.getItemId())
         {
             case R.id.help_help_menu:
-                Intent i = new Intent(MainActivity.this, HelpActivity.class);
-                startActivity(i);
+                HelpActivity.launch(this);
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                 break;
         }

@@ -1,5 +1,6 @@
 package com.pawlowski.shopisto.edit_product_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -13,6 +14,7 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.list_activity.ListActivity;
 import com.pawlowski.shopisto.models.ProductModel;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -34,6 +36,30 @@ public class EditProductActivity extends BaseActivity implements EditProductView
 
     private EditProductViewMvc viewMvc;
     private CategoryAdapter adapter;
+
+    public static void launchFromLists(Context context, int listId, String listTittle, String listKey, boolean groups, int categoryId, ProductModel product)
+    {
+        Intent i = new Intent(context, EditProductActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listTittle", listTittle);
+        i.putExtra("listKey", listKey);
+        i.putExtra("groups", groups);
+        i.putExtra("categoryId", categoryId);
+        i.putExtra("product", product);
+        context.startActivity(i);
+    }
+
+    public static void launchFromGroups(Context context, boolean groups, int groupId, String groupKey, int categoryId, ProductModel product)
+    {
+        Intent i = new Intent(context, EditProductActivity.class);
+
+        i.putExtra("groups", groups);
+        i.putExtra("groupId", groupId);
+        i.putExtra("groupKey", groupKey);
+        i.putExtra("categoryId", categoryId);
+        i.putExtra("product", product);
+        context.startActivity(i);
+    }
 
 
     @Override
@@ -110,11 +136,7 @@ public class EditProductActivity extends BaseActivity implements EditProductView
     public void onBackPressed() {
         if(!groupProduct)
         {
-            Intent i = new Intent(EditProductActivity.this, ListActivity.class);
-            i.putExtra("listId", listId);
-            i.putExtra("listTittle", listTittle);
-            i.putExtra("listKey", listKey);
-            startActivity(i);
+            ListActivity.launch(this, listId, listTittle, listKey, false);
             finish();
         }
 

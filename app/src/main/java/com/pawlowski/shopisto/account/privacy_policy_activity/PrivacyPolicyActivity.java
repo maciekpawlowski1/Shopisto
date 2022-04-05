@@ -3,6 +3,8 @@ package com.pawlowski.shopisto.account.privacy_policy_activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
@@ -10,10 +12,17 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 
 public class PrivacyPolicyActivity extends AppCompatActivity {
 
     TextView textView;
+
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, PrivacyPolicyActivity.class);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,6 +1,7 @@
 package com.pawlowski.shopisto.share_activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
@@ -39,6 +41,15 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
     boolean changingActivity = false;
 
     private ShareActivityViewMvc viewMvc;
+
+    public static void launch(Context context, int listId, String listTittle, String listKey)
+    {
+        Intent i = new Intent(context, ShareActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listTittle", listTittle);
+        i.putExtra("listKey", listKey);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

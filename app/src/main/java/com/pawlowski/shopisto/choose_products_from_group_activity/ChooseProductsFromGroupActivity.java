@@ -1,5 +1,7 @@
 package com.pawlowski.shopisto.choose_products_from_group_activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +12,7 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.group_activity.ProductsInGroupAdapter;
 import com.pawlowski.shopisto.models.ProductModel;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,16 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
     private String listKey;
     private ProductsInGroupAdapter adapter;
     private ChooseProductsFromGroupViewMvc viewMvc;
+
+    public static void launch(Context context, int listId, int groupId, String groupKey, String listKey)
+    {
+        Intent i = new Intent(context, ChooseProductsFromGroupActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("groupId", groupId);
+        i.putExtra("groupKey", groupKey);
+        i.putExtra("listKey", listKey);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

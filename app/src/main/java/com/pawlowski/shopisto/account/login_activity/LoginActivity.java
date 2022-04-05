@@ -2,6 +2,7 @@ package com.pawlowski.shopisto.account.login_activity;
 
 import androidx.annotation.NonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,6 +42,12 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
     private LoginViewMvc viewMvc;
     private GoogleSignInClient mGoogleSignInClient;
 
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, LoginActivity.class);
+        context.startActivity(i);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +68,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
         super.onStart();
         if(FirebaseAuth.getInstance().getCurrentUser() != null)
         {
-            Intent i = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(i);
+            MainActivity.launch(this);
             finish();
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         }
@@ -72,8 +78,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
     public void turnOnOfflineModeAction()
     {
         turnOnOfflineMode();
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
+        MainActivity.launch(this);
         finish();
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
@@ -116,17 +121,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
                 Log.w(TAG, "Google sign in failed");
                 showErrorSnackbar(getString(R.string.login_failed), true);
             }
-            /*Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-                showErrorSnackbar(getString(R.string.login_failed), true);
-            }*/
+
         }
     }
 
@@ -238,8 +233,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
 
     @Override
     public void onCreateAccountClick() {
-        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-        startActivity(i);
+        RegisterActivity.launch(this);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
@@ -255,8 +249,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
 
     @Override
     public void onResetPasswordClick() {
-        Intent i = new Intent(LoginActivity.this, ResetPasswordActivity.class);
-        startActivity(i);
+        ResetPasswordActivity.launch(this);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

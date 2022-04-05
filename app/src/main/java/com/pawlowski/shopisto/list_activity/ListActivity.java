@@ -1,5 +1,6 @@
 package com.pawlowski.shopisto.list_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -63,6 +64,17 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
     private boolean changingActivity = false;
 
     private ListActivityViewMvc viewMvc;
+
+    public static void launch(Context context, int listId, String listTittle, String listKey, boolean justCreated)
+    {
+        Intent i = new Intent(context, ListActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listTittle", listTittle);
+        i.putExtra("listKey", listKey);
+        i.putExtra("justCreated", justCreated);
+        context.startActivity(i);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +87,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
         listTittle = bundle.getString("listTittle", " ");
         listKey = bundle.getString("listKey");
         justCreated = bundle.getBoolean("justCreated", false);
-        boolean amIOwner = bundle.getBoolean("amIOwner");
 
         getSupportActionBar().setTitle(listTittle);
 
@@ -531,19 +542,13 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
             if(!isOfflineModeOn())
             {
-                Intent i = new Intent(ListActivity.this, ShareActivity.class);
-
-                i.putExtra("listId", listId);
-                i.putExtra("listTittle", listTittle);
-                i.putExtra("listKey", listKey);
                 changingActivity = true;
-                startActivity(i);
+                ShareActivity.launch(ListActivity.this, listId, listTittle, listKey);
             }
             else
             {
                 Toast.makeText(getApplicationContext(), getString(R.string.login_before_sharing), Toast.LENGTH_LONG).show();
-                Intent i = new Intent(ListActivity.this, LoginActivity.class);
-                startActivity(i);
+                LoginActivity.launch(ListActivity.this);
 
             }
             finish();
@@ -556,10 +561,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
             if(adapter.isSomethingSelected())
                 adapter.unselectAllProducts();
 
-            Intent i = new Intent(ListActivity.this, ChooseGroupActivity.class);
-            i.putExtra("listId", listId);
-            i.putExtra("listKey", listKey);
-            startActivity(i);
+            ChooseGroupActivity.launch(ListActivity.this, listId, listKey);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
         }
@@ -610,10 +612,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
     public void editAction(boolean fromActionBar, ProductModel selectedProductIfNotFromActionBar)
     {
-        Intent i = new Intent(ListActivity.this, EditProductActivity.class);
-        i.putExtra("listId", listId);
-        i.putExtra("listTittle", listTittle);
-        i.putExtra("listKey", listKey);
         ProductModel product;
         if(fromActionBar)
         {
@@ -626,13 +624,8 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
         adapter.unselectAllProducts();
 
-        i.putExtra("product", product);
-        i.putExtra("productSelected", product.isSelected());
-        i.putExtra("category_id", product.getCategoryId());
-
-        startActivity(i);
+        EditProductActivity.launchFromLists(this, listId, listTittle, listKey, false, product.getCategoryId(), product);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
         finish();
     }
 
@@ -657,10 +650,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
         if(!viewMvc.areButtonsVisible())
         {
-            Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
-            i.putExtra("listId", listId);
-            i.putExtra("listKey", listKey);
-            startActivity(i);
+            AddProductsToListActivity.launch(this, listId, listKey);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         }
         else
@@ -682,10 +672,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
         if(adapter.isSomethingSelected())
             adapter.unselectAllProducts();
 
-        Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
-        i.putExtra("listId", listId);
-        i.putExtra("listKey", listKey);
-        startActivity(i);
+        AddProductsToListActivity.launch(this, listId, listKey);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
@@ -694,10 +681,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
         if(adapter.isSomethingSelected())
             adapter.unselectAllProducts();
 
-        Intent i = new Intent(ListActivity.this, ChooseGroupActivity.class);
-        i.putExtra("listId", listId);
-        i.putExtra("listKey", listKey);
-        startActivity(i);
+        ChooseGroupActivity.launch(this, listId, listKey);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
@@ -737,10 +721,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
     @Override
     public void onEmptyListImageClick() {
-        Intent i = new Intent(ListActivity.this, AddProductsToListActivity.class);
-        i.putExtra("listId", listId);
-        i.putExtra("listKey", listKey);
-        startActivity(i);
+        AddProductsToListActivity.launch(this, listId, listKey);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

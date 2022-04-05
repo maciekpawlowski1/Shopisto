@@ -1,5 +1,6 @@
 package com.pawlowski.shopisto.list_creating_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +21,13 @@ public class ListCreatingActivity extends BaseActivity {
 
     TextInputEditText tittleInput;
     Button createButton;
+
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, ListCreatingActivity.class);
+        context.startActivity(i);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -74,25 +74,15 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
             public void onClick(View v) {
                 if(!choosing)
                 {
-                    Intent i = new Intent(activity, GroupActivity.class);
-                    i.putExtra("groupTittle", currentGroup.getTittle());
-                    i.putExtra("groupId", currentGroup.getId());
-                    i.putExtra("groupKey", currentGroup.getKey());
                     ((ProductsFragment)fragment).setChangingActivityTrue();
-                    activity.startActivity(i);
+                    GroupActivity.launch(activity, currentGroup.getId(), currentGroup.getTittle(), currentGroup.getKey());
                     activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                 }
                 else
                 {
                     if(currentGroup.getProducts().size() != 0)
                     {
-                        Intent i = new Intent(activity, ChooseProductsFromGroupActivity.class);
-                        i.putExtra("listId", listId);
-                        i.putExtra("groupTittle", currentGroup.getTittle());
-                        i.putExtra("groupId", currentGroup.getId());
-                        i.putExtra("groupKey", currentGroup.getKey());
-                        i.putExtra("listKey", ((ChooseGroupActivity)activity).getListKey());
-                        activity.startActivity(i);
+                        ChooseProductsFromGroupActivity.launch(activity, listId, currentGroup.getId(), currentGroup.getKey(), ((ChooseGroupActivity)activity).getListKey());
                         activity.finish();
                         activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                     }

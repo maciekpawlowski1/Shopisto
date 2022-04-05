@@ -2,6 +2,7 @@ package com.pawlowski.shopisto.add_friend_activity;
 
 import androidx.annotation.NonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -30,6 +31,15 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
     private String foundFriendUid;
 
     private AddFriendViewMvc viewMvc;
+
+    public static void launch(Context context, int listId, String listTittle, String listKey)
+    {
+        Intent i = new Intent(context, AddFriendActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listTittle", listTittle);
+        i.putExtra("listKey", listKey);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +74,7 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
 
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(AddFriendActivity.this, ShareActivity.class);
-        i.putExtra("listId", listId);
-        i.putExtra("listTittle", listTittle);
-        i.putExtra("listKey", listKey);
-        startActivity(i);
+        ShareActivity.launch(this, listId, listTittle, listKey);
         finish();
     }
 

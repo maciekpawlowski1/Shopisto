@@ -2,6 +2,7 @@ package com.pawlowski.shopisto.account.register_activity;
 
 import androidx.annotation.NonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,6 +12,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.R;
@@ -21,6 +23,13 @@ import com.pawlowski.shopisto.database.OnlineDBHandler;
 public class RegisterActivity extends BaseActivity implements RegisterViewMvc.RegisterButtonsClickListener {
 
     private RegisterViewMvc viewMvc;
+
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, RegisterActivity.class);
+        context.startActivity(i);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,8 +159,7 @@ public class RegisterActivity extends BaseActivity implements RegisterViewMvc.Re
 
     @Override
     public void onPolicyClick() {
-        Intent i = new Intent(RegisterActivity.this, PrivacyPolicyActivity.class);
-        startActivity(i);
+        PrivacyPolicyActivity.launch(this);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

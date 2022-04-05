@@ -2,6 +2,7 @@ package com.pawlowski.shopisto.group_activity;
 
 import androidx.annotation.NonNull;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -16,6 +17,7 @@ import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.models.ProductModel;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.GroupActivityButtonsClickListener {
 
@@ -32,6 +34,15 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
     private boolean changingActivity = false;
 
     private GroupActivityViewMvc viewMvc;
+
+    public static void launch(Context context, int groupId, String groupTittle, String groupKey)
+    {
+        Intent i = new Intent(context, GroupActivity.class);
+        i.putExtra("groupId", groupId);
+        i.putExtra("groupTittle", groupTittle);
+        i.putExtra("groupKey", groupKey);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,16 +142,12 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 //Edit product activity open
-                Intent i = new Intent(GroupActivity.this, EditProductActivity.class);
-                i.putExtra("group_id", groupId);
-                i.putExtra("groups", true);
-                i.putExtra("groupKey", groupKey);
 
                 ProductModel product = adapter.getSelectedProduct();
                 adapter.unselectProduct();
-                i.putExtra("product", product);
-                i.putExtra("category_id", product.getCategoryId());
-                startActivity(i);
+
+                EditProductActivity.launchFromGroups(GroupActivity.this, true, groupId, groupKey, product.getCategoryId(), product);
+
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
                 return true;
@@ -215,12 +222,7 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
 
     @Override
     public void onAddButtonClick() {
-        Intent i = new Intent(GroupActivity.this, EditProductActivity.class);
-        i.putExtra("group_id", groupId);
-        i.putExtra("product", new ProductModel("", "", false, 1));
-        i.putExtra("groups", true);
-        i.putExtra("groupKey", groupKey);
-        startActivity(i);
+        EditProductActivity.launchFromGroups(this, true, groupId, groupKey, 0, new ProductModel("", "", false, 1));
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

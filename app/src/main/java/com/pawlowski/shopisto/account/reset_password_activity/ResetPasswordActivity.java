@@ -2,12 +2,16 @@ package com.pawlowski.shopisto.account.reset_password_activity;
 
 import androidx.annotation.NonNull;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.pawlowski.shopisto.account.login_activity.LoginActivity;
+import com.pawlowski.shopisto.account.register_activity.RegisterActivity;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.R;
 
@@ -15,6 +19,12 @@ public class ResetPasswordActivity extends BaseActivity implements ResetPassword
 
     private ResetPasswordViewMvc viewMvc;
     private CountDownTimer backTimer;
+
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, RegisterActivity.class);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

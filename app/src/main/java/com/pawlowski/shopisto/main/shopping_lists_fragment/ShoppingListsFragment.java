@@ -593,15 +593,13 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
 
     @Override
     public void onAddButtonClick() {
-        Intent i = new Intent(getActivity(), ListCreatingActivity.class);
-        startActivity(i);
+        ListCreatingActivity.launch(getContext());
         activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
     @Override
     public void onNoListItemClick() {
-        Intent i = new Intent(getActivity(), ListCreatingActivity.class);
-        startActivity(i);
+        ListCreatingActivity.launch(getContext());
         activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 

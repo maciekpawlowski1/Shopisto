@@ -93,13 +93,8 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
 
     @Override
     public void onConstraintLayoutClick(ListModel currentList) {
-        Intent i = new Intent(activity, ListActivity.class);
-        i.putExtra("listId", currentList.getId());
-        i.putExtra("listTittle", currentList.getTittle());
-        i.putExtra("listKey", currentList.getFirebaseKey());
-        i.putExtra("amIOwner", currentList.isAmIOwner());
         ((ShoppingListsFragment)fragment).setChangingActivityTrue();
-        activity.startActivity(i);
+        ListActivity.launch(activity, currentList.getId(), currentList.getTittle(), currentList.getFirebaseKey(), currentList.isAmIOwner());
         activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 

@@ -1,5 +1,6 @@
 package com.pawlowski.shopisto.add_products_to_list_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,6 +12,7 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.ProductModel;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,14 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
     private boolean offlineMode = false;
 
     private AddProductsToListViewMvc viewMvc;
+
+    public static void launch(Context context, int listId, String listKey)
+    {
+        Intent i = new Intent(context, AddProductsToListActivity.class);
+        i.putExtra("listId", listId);
+        i.putExtra("listKey", listKey);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

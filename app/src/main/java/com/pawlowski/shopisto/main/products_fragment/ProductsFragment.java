@@ -93,8 +93,7 @@ public class ProductsFragment extends MyFragmentHolder implements ProductsFragme
 
     public void navigateToAddingGroupsAction()
     {
-        Intent i = new Intent(getActivity(), AddGroupActivity.class);
-        startActivity(i);
+        AddGroupActivity.launch(getContext());
         getActivity().overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
     }

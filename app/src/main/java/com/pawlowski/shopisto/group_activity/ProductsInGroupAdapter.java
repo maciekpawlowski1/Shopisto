@@ -254,13 +254,7 @@ public class ProductsInGroupAdapter extends BaseSelectableAdapter<ProductsInGrou
             }
             else
             {
-                Intent i = new Intent(activity, EditProductActivity.class);
-                i.putExtra("group_id", groupId);
-                i.putExtra("product", currentProduct);
-                i.putExtra("groups", true);
-                i.putExtra("groupKey", groupKey);
-                i.putExtra("category_id", currentProduct.getCategoryId());
-                activity.startActivity(i);
+                EditProductActivity.launchFromGroups(activity, true, groupId, groupKey, currentProduct.getCategoryId(), currentProduct);
                 activity.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             }
         }

@@ -1,20 +1,28 @@
 package com.pawlowski.shopisto.add_group_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
+import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.models.GroupModel;
+import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import java.util.Calendar;
 
 public class AddGroupActivity extends BaseActivity implements AddGroupViewMvc.AddGroupButtonsClickListener {
 
     private AddGroupViewMvc viewMvc;
+
+    public static void launch(Context context)
+    {
+        Intent i = new Intent(context, AddGroupActivity.class);
+        context.startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +58,8 @@ public class AddGroupActivity extends BaseActivity implements AddGroupViewMvc.Ad
             group.setKey(key);
             db.insertGroup(group, Calendar.getInstance().getTime().getTime()+"");
             int id = db.getIdOfLastGroup();
-            Intent i = new Intent(AddGroupActivity.this, GroupActivity.class);
-            i.putExtra("groupTittle", tittle);
-            i.putExtra("groupId", id);
-            i.putExtra("groupKey", key);
-            startActivity(i);
+
+            GroupActivity.launch(this, id, tittle, key);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         }
