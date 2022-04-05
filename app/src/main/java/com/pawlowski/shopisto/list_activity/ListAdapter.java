@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.base.BaseSelectableAdapter;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.models.ProductModel;
@@ -18,16 +19,14 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder> implements ListItemViewMvc.ListItemButtonsClickListener {
+public class ListAdapter extends BaseSelectableAdapter<ListAdapter.ProductHolder> implements ListItemViewMvc.ListItemButtonsClickListener {
 
     ArrayList<ProductModel>products = new ArrayList<>();
 
     private final Activity activity;
     private final int listId;
-    int positionSelected = -1;
     String listKey;
     boolean offlineMode = false;
-    ArrayList<Boolean> positionsSelected = new ArrayList<>();
 
 
     ListAdapter(Activity activity, int listId, String listKey, boolean offlineMode)
@@ -52,7 +51,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     public void onBindViewHolder(@NonNull ListAdapter.ProductHolder holder, int position) {
         ProductModel currentProduct = products.get(position);
         holder.viewMvc.clearAllListeners();
-        holder.viewMvc.bindProduct(currentProduct, position, positionsSelected.get(position));
+        holder.viewMvc.bindProduct(currentProduct, position, isPositionSelected(position));
         holder.viewMvc.registerListener(this);
     }
 
@@ -127,79 +126,25 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     public void setProducts(List<ProductModel> products)
     {
         this.products = new ArrayList<>(products);
-        positionsSelected.clear();
-        for(int i=0;i<products.size();i++)
-        {
-            positionsSelected.add(false);
-        }
+        initNewSelections(products.size());
 
         notifyDataSetChanged();
     }
 
-    public ArrayList<ProductModel>getSelectedProducts()
+    public List<ProductModel>getSelectedProducts()
     {
-        ArrayList<ProductModel> selectedProducts = new ArrayList<>();
-        for(int i=0;i<positionsSelected.size();i++)
-        {
-            if(positionsSelected.get(i))
-            {
-                selectedProducts.add(products.get(i));
-            }
-        }
-        return selectedProducts;
+        return getSelectedElements(products);
     }
-
-    public ArrayList<Integer>getSelectedPositions()
-    {
-        ArrayList<Integer> selectedPositions = new ArrayList<>();
-        for(int i=0;i<positionsSelected.size();i++)
-        {
-            if(positionsSelected.get(i))
-            {
-                selectedPositions.add(i);
-            }
-        }
-        return selectedPositions;
-    }
-
-    public int getNumberOfSelected()
-    {
-        int number = 0;
-        for(int i=0;i<positionsSelected.size();i++)
-        {
-            if(positionsSelected.get(i))
-            {
-                number++;
-            }
-        }
-        return number;
-    }
-
-    public boolean isSomethingSelected()
-    {
-        for(int i=0;i<positionsSelected.size();i++)
-        {
-            if(positionsSelected.get(i))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-
-
 
     public void selectProduct(int position)
     {
-        int numberSelected = getNumberOfSelected();
+        int numberSelected = getNumberOfSelectedElements();
         if(numberSelected == 0)
             ((ListActivity)activity).setMenuVisible();
         else if(numberSelected == 1)
             ((ListActivity)activity).showOnlyDeleteItem();
 
-        positionsSelected.set(position, true);
+        selectElement(position);
         notifyItemChanged(position);
 
 
@@ -207,13 +152,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
 
     public void unselectProduct(int position)
     {
-        int numberSelected = getNumberOfSelected();
+        int numberSelected = getNumberOfSelectedElements();
         if(numberSelected == 1)
             ((ListActivity)activity).setMenuInvisible();
         else if(numberSelected == 2)
             ((ListActivity)activity).setMenuVisible();
 
-        positionsSelected.set(position, false);
+        unselectElement(position);
         notifyItemChanged(position);
 
 
@@ -221,10 +166,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
 
     public void unselectAllProducts()
     {
-        for(int i=0;i<positionsSelected.size();i++)
-        {
-            positionsSelected.set(i, false);
-        }
+        unselectAllElements();
         notifyDataSetChanged();
         ((ListActivity)activity).setMenuInvisible();
     }
@@ -233,8 +175,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
 
     public void deleteSelectedProducts(View view)
     {
-        ArrayList<ProductModel> selectedProducts = getSelectedProducts();
-        ArrayList<Integer> selectedProductsPositions = getSelectedPositions();
+        List<ProductModel> selectedProducts = getSelectedElements(products);
+        List<Integer> selectedProductsPositions = getSelectedPositions();
 
         for(int i=selectedProducts.size()-1;i>=0;i--)
         {
@@ -242,7 +184,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
             if(!offlineMode)
                 OnlineDBHandler.deleteProductWithNotifying(listKey, product.getTittle(), ((ListActivity)activity).getFriendsFromList());
             products.remove(product);
-            positionsSelected.remove(selectedProductsPositions.get(i).intValue());
+            deleteElement(selectedProductsPositions.get(i));
 
             DBHandler.getInstance(activity.getApplicationContext()).deleteProduct(product, listId);
             notifyItemRemoved(selectedProductsPositions.get(i));
@@ -274,7 +216,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
                         OnlineDBHandler.addProductWithDescription(listKey, product, ((ListActivity)activity).getFriendsFromList());
                     int productPosition = selectedProductsPositions.get(i);
                     products.add(productPosition, product);
-                    positionsSelected.add(productPosition, false);
+                    addElement(productPosition, false);
                     DBHandler.getInstance(activity.getApplicationContext()).insertProduct(product, listId);
                     notifyItemInserted(productPosition);
                 }
@@ -283,18 +225,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
             }
         }).setActionTextColor(activity.getApplicationContext().getResources().getColor(R.color.blue)).show();
 
-    }
-
-    public ProductModel getSelectedProdukt()
-    {
-        if(positionSelected != -1)
-        {
-            return products.get(positionSelected);
-        }
-        else
-        {
-            return null;
-        }
     }
 
     public void doGoOnlineForAMoment()
@@ -311,7 +241,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     public void onCardClick(int currentPosition) {
         if(isSomethingSelected())
         {
-            if(positionsSelected.get(currentPosition))
+            if(isPositionSelected(currentPosition))
             {
                 unselectProduct(currentPosition);
             }
@@ -323,7 +253,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     @Override
     public void onCardLongClick(int currentPosition) {
 
-        if(!positionsSelected.get(currentPosition))
+        if(!isPositionSelected(currentPosition))
         {
             selectProduct(currentPosition);
         }
@@ -337,7 +267,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
     public void onConstraintClick(int currentPosition) {
         if(isSomethingSelected())
         {
-            if(positionsSelected.get(currentPosition))
+            if(isPositionSelected(currentPosition))
             {
                 unselectProduct(currentPosition);
             }
@@ -365,7 +295,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
         viewMvc.animateCheckBox();
 
         boolean isSelected = viewMvc.isCheckBoxChecked();
-        //Log.d("selected", isSelected+"");
         currentProduct.setSelected(isSelected);
 
         if(!offlineMode)
@@ -388,8 +317,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ProductHolder>
             to = getNewPositionForProduct(currentProduct.getTittle(), isSelected, currentProduct.getCategoryId());
 
             products.add(to, currentProduct);
-
-
 
             notifyItemMoved(from, to);
             if(from > to)

@@ -56,16 +56,13 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
     private ValueEventListener productsListener;
     private ValueEventListener friendsListener;
 
-    final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 60;
+    private final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 60;
 
-    CountDownTimer downloadTimer;
-    CountDownTimer stoppingTimer;
-    boolean changingActivity = false;
-
-    //boolean isCheckingForUpdates = false;
+    private CountDownTimer downloadTimer;
+    private CountDownTimer stoppingTimer;
+    private boolean changingActivity = false;
 
     private ListActivityViewMvc viewMvc;
-    //Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,11 +77,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
         justCreated = bundle.getBoolean("justCreated", false);
         boolean amIOwner = bundle.getBoolean("amIOwner");
 
-        //Log.d("onCreate listKey", listKey);
-        /*toolbar = findViewById(R.id.toolbar_list);
-        setSupportActionBar(toolbar);*/
         getSupportActionBar().setTitle(listTittle);
-        //getSupportActionBar().setHomeButtonEnabled(true);
 
         boolean isOfflineMode = isOfflineModeOn();
 
@@ -92,7 +85,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
         viewMvc.setRecyclerAdapter(adapter);
 
         viewMvc.hideEmptyListItems();
-
 
     }
 
@@ -173,45 +165,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
 
                                     downloadProducts(timestamp);
-                                /*.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if(snapshot.exists())
-                                        {
-                                            Log.d("downloading", "downloading started");
-                                            Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) snapshot.getValue();
-                                            Object[] mapKeys = map.keySet().toArray();
-                                            List<ProductModel> newProducts = new ArrayList<>();
-                                            for(Object o:mapKeys)
-                                            {
-                                                //Log.d("downloading", o.toString());
-                                                Map<String, Object>productMap = (Map<String, Object>) map.get(o.toString());
-                                                int number = Integer.parseInt(productMap.get("n").toString());
-                                                boolean selected = Boolean.parseBoolean(productMap.get("s").toString());
-                                                int category = Integer.parseInt(productMap.get("c").toString());
-                                                String description = "";
-                                                if(productMap.containsKey("d"))
-                                                    description = productMap.get("d").toString();
-
-
-                                                ProductModel product = new ProductModel(o.toString(), description, selected, number);
-                                                product.setCategoryId(category);
-                                                newProducts.add(product);
-                                                Log.d("downloading", product.toString());
-                                            }
-
-                                            DBHandler.getInstance(getApplicationContext()).syncList(newProducts, listId);
-                                            loadProductsInAsyncTask();
-                                        }
-
-                                        DBHandler.getInstance(getApplicationContext()).updateListDownloadTimestamp(listKey, timestamp);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.d("Download", "Failed to download");
-                                    }
-                                });*/
 
                                 }
                                 else
@@ -257,7 +210,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                                         public void onSuccess(DataSnapshot dataSnapshot) {
                                             String owner = "";
                                             Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                            //Log.d("map", map.toString());
                                             Object[] friends_uids = map.keySet().toArray();
                                             List<FriendModel>mails = new ArrayList<>();
                                             for(Object o:friends_uids)
@@ -272,19 +224,13 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                                                     String mail = map.get(uid).toString();
                                                     FriendModel fr = new FriendModel("", mail, true, false);
                                                     fr.setUid(uid);
-                                                    //Log.d("NewMails", fr.getMail());
                                                     mails.add(fr);
 
-                                                    //Log.d("friends", mail + " " + mail.length());
                                                 }
                                             }
 
-                                            //if(!ListActivity.this.isDestroyed())
-                                            //showProgressDialog(getString(R.string.please_wait));
                                             DBHandler.getInstance(getApplicationContext()).syncListFriends(mails, listId, owner, timestamp, listKey);
                                             loadFriends();
-                                            //if(!ListActivity.this.isDestroyed())
-                                            //hideProgressDialog();
                                         }
                                     });
 
@@ -297,11 +243,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                             }
                             else
                             {
-                    /*Log.d("f", "onBackPressed action f");
-                    if(!justCreated)
-                    {
-                        onBackPressed();
-                    }*/
+
                             }
 
                         }
@@ -313,20 +255,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                     });
         }
 
-
-
-        /*ArrayList<ProductModel> products = new ArrayList<>(DBHandler.getInstance(getApplicationContext()).getAllProductOfList(listId));
-        if(products.size() > 0)
-        {
-            textEmptyList.setVisibility(View.GONE);
-            imageEmptyList.setVisibility(View.GONE);
-        }
-        else
-        {
-            textEmptyList.setVisibility(View.VISIBLE);
-            imageEmptyList.setVisibility(View.VISIBLE);
-        }
-        adapter.setProducts(products);*/
     }
 
     @Override
@@ -354,10 +282,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
         }
 
-
-
-
-
         if(!changingActivity)
             FirebaseDatabase.getInstance().goOffline();
 
@@ -379,8 +303,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                 if(dataSnapshot.exists())
                 {
                     String timestamp = dataSnapshot.getValue().toString();
-                    //Log.d("checking", timestamp+"");
-                    //Log.d("timestamp A", timestamp);
                     if(!DBHandler.getInstance(getApplicationContext()).isListSynced(listKey, timestamp))
                     {
                         Log.d("syncingA", "Not synced");
@@ -388,45 +310,6 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
 
                         downloadProducts();
-                                /*.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if(snapshot.exists())
-                                        {
-                                            Log.d("downloading", "downloading started");
-                                            Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) snapshot.getValue();
-                                            Object[] mapKeys = map.keySet().toArray();
-                                            List<ProductModel> newProducts = new ArrayList<>();
-                                            for(Object o:mapKeys)
-                                            {
-                                                //Log.d("downloading", o.toString());
-                                                Map<String, Object>productMap = (Map<String, Object>) map.get(o.toString());
-                                                int number = Integer.parseInt(productMap.get("n").toString());
-                                                boolean selected = Boolean.parseBoolean(productMap.get("s").toString());
-                                                int category = Integer.parseInt(productMap.get("c").toString());
-                                                String description = "";
-                                                if(productMap.containsKey("d"))
-                                                    description = productMap.get("d").toString();
-
-
-                                                ProductModel product = new ProductModel(o.toString(), description, selected, number);
-                                                product.setCategoryId(category);
-                                                newProducts.add(product);
-                                                Log.d("downloading", product.toString());
-                                            }
-
-                                            DBHandler.getInstance(getApplicationContext()).syncList(newProducts, listId);
-                                            loadProductsInAsyncTask();
-                                        }
-
-                                        DBHandler.getInstance(getApplicationContext()).updateListDownloadTimestamp(listKey, timestamp);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.d("Download", "Failed to download");
-                                    }
-                                });*/
 
                     }
                     else
@@ -479,16 +362,11 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 DataSnapshot snapshot = dataSnapshot;
-
-                //FirebaseDatabase.getInstance().goOffline();
-                //Log.d("Connection_list_a", "goOffline");
                 resetTimersAndStartStop();
 
                 if(snapshot.exists())
                 {
 
-                    //Log.d("problem1", snapshot.getValue().toString());
-                    //Log.d("downloading", "downloading started");
                     Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) snapshot.getValue();
                     Object[] mapKeys = map.keySet().toArray();
                     List<ProductModel> newProducts = new ArrayList<>();
@@ -748,15 +626,9 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
         adapter.unselectAllProducts();
 
-                /*i.putExtra("productTittle", product.getTittle());
-                i.putExtra("productDescription", product.getDescription());
-                i.putExtra("productId", product.getId());
-                i.putExtra("productNumber", product.getNumber());*/
         i.putExtra("product", product);
         i.putExtra("productSelected", product.isSelected());
         i.putExtra("category_id", product.getCategoryId());
-        //changingActivity = true;
-
 
         startActivity(i);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
