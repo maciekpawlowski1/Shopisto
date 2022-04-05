@@ -104,14 +104,14 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
     public void deleteSelectedProducts(View view)
     {
 
-        List<ProductModel> selectedPoducts = getSelectedProducts();
-        if(selectedPoducts.size() > 0) {
+        List<ProductModel> selectedProducts = getSelectedProducts();
+        if(selectedProducts.size() > 0) {
             if(!activity.isOfflineModeOn())
-                OnlineDBHandler.deleteProductsInGroup(selectedPoducts, groupKey);
+                OnlineDBHandler.deleteProductsInGroup(selectedProducts, groupKey);
             DBHandler.getInstance(activity.getApplicationContext()).increaseGroupTimestamp(groupKey);
         }
 
-        for(ProductModel p:selectedPoducts)
+        for(ProductModel p:selectedProducts)
         {
 
             DBHandler.getInstance(activity.getApplicationContext()).deleteProductFromGroup(p);
@@ -127,7 +127,7 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
         }
 
 
-        Snackbar.make(view, activity.getString(R.string.products_deleted_1)  + " " + selectedPoducts.size() + " " + activity.getString(R.string.products_deleted_2), Snackbar.LENGTH_LONG).setAction(activity.getString(R.string.undo), new View.OnClickListener() {
+        Snackbar.make(view, activity.getString(R.string.products_deleted_1)  + " " + selectedProducts.size() + " " + activity.getString(R.string.products_deleted_2), Snackbar.LENGTH_LONG).setAction(activity.getString(R.string.undo), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(products.size() == 0)
@@ -136,9 +136,9 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
                 }
 
                 if(!activity.isOfflineModeOn())
-                    OnlineDBHandler.addManyProductsInGroup(selectedPoducts, groupKey);
+                    OnlineDBHandler.addManyProductsInGroup(selectedProducts, groupKey);
                 DBHandler.getInstance(activity.getApplicationContext()).increaseGroupTimestamp(groupKey);
-                for(ProductModel p:selectedPoducts)
+                for(ProductModel p:selectedProducts)
                 {
 
                     DBHandler.getInstance(activity.getApplicationContext()).insertProductToGroup(p, groupId);
