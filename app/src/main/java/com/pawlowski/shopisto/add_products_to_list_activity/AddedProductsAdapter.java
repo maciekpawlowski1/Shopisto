@@ -34,8 +34,8 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         this.offlineMode = offlineMode;
     }
 
-    private Activity activity;
-    private int listId;
+    private final Activity activity;
+    private final int listId;
     String listKey;
     boolean suggesting = false;
     String searched = "";
@@ -75,7 +75,6 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         {
             holder.newItemViewMvc.clearAllListeners();
         }
-
         ProductModel currentProduct;
         if(suggesting)
         {
@@ -86,7 +85,6 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
                 holder.newItemViewMvc.registerListener(this);
                 return;
             }
-            
         }
         else
         {
@@ -102,7 +100,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
             return null;
         for(int i=0;i<addedProducts.size();i++)
         {
-            if(addedProducts.get(i).getTittle().toLowerCase().equals(tittle.toLowerCase()))
+            if(addedProducts.get(i).getTittle().equalsIgnoreCase(tittle))
                 return addedProducts.get(i);
         }
         return null;
@@ -149,8 +147,6 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
             OnlineDBHandler.deleteProductWithNotifying(listKey, product.getTittle(), ((AddProductsToListActivity)activity).getFriendsFromList());
         DBHandler.getInstance(activity.getApplicationContext()).deleteProduct(product, listId);
         notifyItemChanged(position);
-        //notifyItemRangeChanged(0, addedProducts.size());
-
 
     }
 
@@ -200,7 +196,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         for(int i=0;i<allSuggestions.size();i++)
         {
             String s = allSuggestions.get(i);
-            if(s.toLowerCase().contains(searchedText.toLowerCase()) && !s.toLowerCase().equals(searchedText.toLowerCase()))
+            if(s.toLowerCase().contains(searchedText.toLowerCase()) && !s.equalsIgnoreCase(searchedText))
             {
                 suggestedProducts.add(s);
             }
@@ -214,7 +210,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
     {
         for(ProductModel p:addedProducts)
         {
-            if(p.getTittle().toLowerCase().equals(tittle.toLowerCase()))
+            if(p.getTittle().equalsIgnoreCase(tittle))
                 return true;
         }
         return false;
@@ -289,6 +285,10 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
             else if(viewMvc instanceof AddedProductsNewItemViewMvc)
             {
                 newItemViewMvc = (AddedProductsNewItemViewMvc) viewMvc;
+            }
+            else
+            {
+                throw new RuntimeException("Wrong viewMvc class!");
             }
         }
     }
