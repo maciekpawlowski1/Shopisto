@@ -1,18 +1,14 @@
 package com.pawlowski.shopisto.add_products_to_list_activity;
 
 import android.app.Activity;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.base.BaseObservableViewMvc;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.list_activity.ListActivity;
@@ -22,10 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdapter.CardHolder> {
+public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdapter.CardHolder> implements AddedProductsItemViewMvc.AddedProductsItemButtonsClickListener, AddedProductsNewItemViewMvc.AddedProductsNewItemButtonsClickListener {
 
     ArrayList<ProductModel>addedProducts = new ArrayList<>();
     ArrayList<String>suggestedProducts = new ArrayList<>();
@@ -48,14 +43,10 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
     @NonNull
     @Override
     public CardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
         if(viewType == 1000)
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.added_product_card,
-                parent, false);
+            return new CardHolder(new AddedProductsItemViewMvc(LayoutInflater.from(parent.getContext()), parent));
         else
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.added_product_new_card,
-                    parent, false);
-        return new CardHolder(view);
+            return new CardHolder(new AddedProductsNewItemViewMvc(LayoutInflater.from(parent.getContext()), parent));
     }
 
     @Override
@@ -75,116 +66,34 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
 
     @Override
     public void onBindViewHolder(@NonNull AddedProductsAdapter.CardHolder holder, int position) {
+
+        if(holder.normalItemViewMvc != null)
+        {
+            holder.normalItemViewMvc.clearAllListeners();
+        }
+        if(holder.newItemViewMvc != null)
+        {
+            holder.newItemViewMvc.clearAllListeners();
+        }
+
         ProductModel currentProduct;
         if(suggesting)
         {
             currentProduct = getProductByTittle(suggestedProducts.get(position));
             if(currentProduct == null) {
                 String tittleString = suggestedProducts.get(position);
-                SpannableStringBuilder s = new SpannableStringBuilder(tittleString);
-                int fragmentStart = tittleString.toLowerCase().indexOf(searched.toLowerCase());
-                if(fragmentStart != -1)
-                    s.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), fragmentStart, fragmentStart+searched.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                holder.tittleSugestionText.setText(s);
-                holder.constraintSuggestions.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((AddProductsToListActivity)activity).addProduct(holder.tittleSugestionText.getText().toString());
-                    }
-                });
-                holder.addButtonSuggestions.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((AddProductsToListActivity)activity).addProduct(holder.tittleSugestionText.getText().toString());
-                    }
-                });
+                holder.newItemViewMvc.bindItem(tittleString, searched);
+                holder.newItemViewMvc.registerListener(this);
                 return;
             }
-
-
-
+            
         }
         else
         {
             currentProduct = addedProducts.get(position);
         }
-
-
-        if(!suggesting)
-            holder.tittleText.setText(currentProduct.getTittle());
-        else
-        {
-            String tittleString = currentProduct.getTittle();
-            SpannableStringBuilder s = new SpannableStringBuilder(tittleString);
-            int fragmentStart = tittleString.toLowerCase().indexOf(searched.toLowerCase());
-            if(fragmentStart != -1)
-                s.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), fragmentStart, fragmentStart+searched.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            holder.tittleText.setText(s);
-        }
-
-
-        holder.numberText.setText(currentProduct.getNumber()+"");
-        if(currentProduct.getNumber() == 1)
-        {
-            holder.trashOrMinusButton.setImageResource(R.drawable.delete_icon);
-        }
-        else
-        {
-            holder.trashOrMinusButton.setImageResource(R.drawable.minus_icon);
-        }
-
-        /*holder.tittleText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Position", position+"");
-            }
-        });*/
-
-        holder.plusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ((AddProductsToListActivity)activity).resetTimer();
-                FirebaseDatabase.getInstance().goOnline();
-                int currentNumber = currentProduct.getNumber();
-                currentProduct.setNumber(currentNumber + 1);
-                if(!offlineMode)
-                    OnlineDBHandler.setNumberOfProduct(listKey, currentProduct, ((AddProductsToListActivity)activity).getFriendsFromList());
-                notifyItemChanged(position);
-                DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
-            }
-        });
-
-        holder.trashOrMinusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentNumber = currentProduct.getNumber();
-                if(currentNumber == 1)
-                {
-                    if(!suggesting)
-                    {
-                        deleteProduct(position, currentProduct, holder.trashOrMinusButton);
-                    }
-                    else
-                    {
-                        //Method when suggesting is on
-                        deleteProductWhenSuggesting(position, currentProduct, holder.trashOrMinusButton);
-                    }
-                }
-                else
-                {
-                    ((AddProductsToListActivity)activity).resetTimer();
-                    FirebaseDatabase.getInstance().goOnline();
-                    currentProduct.setNumber(currentNumber - 1);
-                    if(!offlineMode)
-                        OnlineDBHandler.setNumberOfProduct(listKey, currentProduct, ((AddProductsToListActivity)activity).getFriendsFromList());
-                    notifyItemChanged(position);
-                    DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
-                }
-
-            }
-        });
-
+        holder.normalItemViewMvc.bindProduct(currentProduct, position, suggesting, searched);
+        holder.normalItemViewMvc.registerListener(this);
     }
 
     public ProductModel getProductByTittle(String tittle)
@@ -320,28 +229,67 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         else return suggestedProducts.size();
     }
 
+    @Override
+    public void onPlusButtonClick(ProductModel currentProduct, int currentPosition, AddedProductsItemViewMvc viewMvc) {
+        ((AddProductsToListActivity)activity).resetTimer();
+        FirebaseDatabase.getInstance().goOnline();
+        int currentNumber = currentProduct.getNumber();
+        currentProduct.setNumber(currentNumber + 1);
+        if(!offlineMode)
+            OnlineDBHandler.setNumberOfProduct(listKey, currentProduct, ((AddProductsToListActivity)activity).getFriendsFromList());
+        notifyItemChanged(currentPosition);
+        DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
+    }
+
+    @Override
+    public void onTrashOrMinusClick(ProductModel currentProduct, int currentPosition, AddedProductsItemViewMvc viewMvc) {
+        int currentNumber = currentProduct.getNumber();
+        if(currentNumber == 1)
+        {
+            if(!suggesting)
+            {
+                deleteProduct(currentPosition, currentProduct, viewMvc.getRootView());
+            }
+            else
+            {
+                //Method when suggesting is on
+                deleteProductWhenSuggesting(currentPosition, currentProduct, viewMvc.getRootView());
+            }
+        }
+        else
+        {
+            ((AddProductsToListActivity)activity).resetTimer();
+            FirebaseDatabase.getInstance().goOnline();
+            currentProduct.setNumber(currentNumber - 1);
+            if(!offlineMode)
+                OnlineDBHandler.setNumberOfProduct(listKey, currentProduct, ((AddProductsToListActivity)activity).getFriendsFromList());
+            notifyItemChanged(currentPosition);
+            DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
+        }
+    }
+
+    @Override
+    public void onSuggestionItemClick(String tittleString) {
+        ((AddProductsToListActivity)activity).addProduct(tittleString);
+    }
+
 
     class CardHolder extends RecyclerView.ViewHolder
     {
-        ImageButton plusButton;
-        ImageButton trashOrMinusButton;
-        TextView tittleText;
-        TextView numberText;
-        TextView tittleSugestionText;
-        ConstraintLayout constraintSuggestions;
-        Button addButtonSuggestions;
-        public CardHolder(@NonNull View itemView) {
-            super(itemView);
+        AddedProductsItemViewMvc normalItemViewMvc;
+        AddedProductsNewItemViewMvc newItemViewMvc;
 
-            plusButton = itemView.findViewById(R.id.plus_image_button_added_card);
-            trashOrMinusButton = itemView.findViewById(R.id.trash_or_minus_image_button_added_card);
-            tittleText = itemView.findViewById(R.id.tittle_added_card);
-            numberText = itemView.findViewById(R.id.number_added_card);
+        public <ListenerType>CardHolder(@NonNull BaseObservableViewMvc<ListenerType> viewMvc) {
+            super(viewMvc.getRootView());
 
-            //Suggestions
-            tittleSugestionText = itemView.findViewById(R.id.tittle_added_new_card);
-            constraintSuggestions = itemView.findViewById(R.id.constraint_added_new_card);
-            addButtonSuggestions = itemView.findViewById(R.id.add_added_new_card);
+            if(viewMvc instanceof AddedProductsItemViewMvc)
+            {
+                normalItemViewMvc = (AddedProductsItemViewMvc) viewMvc;
+            }
+            else if(viewMvc instanceof AddedProductsNewItemViewMvc)
+            {
+                newItemViewMvc = (AddedProductsNewItemViewMvc) viewMvc;
+            }
         }
     }
 }
