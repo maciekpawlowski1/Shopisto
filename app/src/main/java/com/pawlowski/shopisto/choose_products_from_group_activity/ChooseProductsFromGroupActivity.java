@@ -12,6 +12,7 @@ import com.pawlowski.shopisto.group_activity.ProductsInGroupAdapter;
 import com.pawlowski.shopisto.models.ProductModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 
@@ -45,7 +46,7 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
 
     private boolean addSelectedProductsToList()
     {
-        ArrayList<ProductModel> selectedProducts = adapter.getSelectedProducts();
+        List<ProductModel> selectedProducts = adapter.getSelectedProducts();
         if(selectedProducts.size() == 0)
             return false;
         else

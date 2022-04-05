@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.google.android.material.snackbar.Snackbar;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.base.BaseActivity;
+import com.pawlowski.shopisto.base.BaseSelectableAdapter;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.edit_product_activity.EditProductActivity;
@@ -20,7 +21,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroupAdapter.ProductHolder> implements ProductsInGroupItemViewMvc.ProductsInGroupItemButtonsClickListener {
+public class ProductsInGroupAdapter extends BaseSelectableAdapter<ProductsInGroupAdapter.ProductHolder> implements ProductsInGroupItemViewMvc.ProductsInGroupItemButtonsClickListener {
 
     ArrayList<ProductModel>products = new ArrayList<>();
 
@@ -28,7 +29,6 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
     private final int groupId;
     boolean choosing = false;
     String groupKey;
-    ArrayList<Boolean>positionsSelected = new ArrayList<>();
 
     public ProductsInGroupAdapter(BaseActivity activity, int groupId, boolean choosing, String groupKey)
     {
@@ -48,7 +48,7 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
     public void onBindViewHolder(@NonNull ProductsInGroupAdapter.ProductHolder holder, int position) {
         ProductModel currentProduct = products.get(position);
         holder.viewMvc.clearAllListeners();
-        holder.viewMvc.bindProduct(currentProduct, positionsSelected.get(position), choosing, position);
+        holder.viewMvc.bindProduct(currentProduct, isPositionSelected(position), choosing, position);
         holder.viewMvc.registerListener(this);
     }
 
@@ -61,38 +61,14 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
     {
         this.products = new ArrayList<>(products);
 
-
-        positionsSelected.clear();
-        for(int i=0;i<products.size();i++)
-        {
-            positionsSelected.add(choosing);
-        }
-
-
+        initNewSelections(products.size());
 
         notifyDataSetChanged();
     }
 
-    public ArrayList<ProductModel>getSelectedProducts()
+    public List<ProductModel>getSelectedProducts()
     {
-        ArrayList<ProductModel>selectedProducts = new ArrayList<>();
-        for(int i=0;i<products.size();i++)
-        {
-            if(positionsSelected.get(i))
-                selectedProducts.add(products.get(i));
-        }
-        return selectedProducts;
-    }
-
-    public int getHowManySelected()
-    {
-        int numberOfSelected = 0;
-        for(Boolean b:positionsSelected)
-        {
-            if(b)
-                numberOfSelected++;
-        }
-        return numberOfSelected;
+        return getSelectedElements(products);
     }
 
 
@@ -165,17 +141,8 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
 
     private void changeSelectionOfProduct(int index)
     {
-        if(positionsSelected.get(index))
-        {
-            positionsSelected.set(index, false);
-        }
-        else
-        {
-            positionsSelected.set(index, true);
-        }
-
+        changeSelectionOfElement(index);
         notifyItemChanged(index);
-
         if(!choosing)
         {
             doSomethingWithMenuAfterSelecting();
@@ -184,7 +151,7 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
 
     private void doSomethingWithMenuAfterSelecting()
     {
-        int numberOfSelected = getHowManySelected();
+        int numberOfSelected = getNumberOfSelectedElements();
         if(numberOfSelected == 0)
         {
             ((GroupActivity)activity).setMenuInvisible();
@@ -203,25 +170,13 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
 
     private void resetPositionsSelected()
     {
-        positionsSelected.clear();
-        for(int i=0;i<products.size();i++)
-        {
-            positionsSelected.add(false);
-        }
+        initNewSelections(products.size());
         ((GroupActivity)activity).setMenuInvisible();
     }
 
     public void unselectAllProducts()
     {
-        for(int i=0;i<positionsSelected.size();i++)
-        {
-            if(positionsSelected.get(i))
-            {
-                positionsSelected.set(i, false);
-                notifyItemChanged(i);
-            }
-
-        }
+        unselectAllElementsAndNotify();
         ((GroupActivity)activity).setMenuInvisible();
     }
 
@@ -293,7 +248,7 @@ public class ProductsInGroupAdapter extends RecyclerView.Adapter<ProductsInGroup
     public void onCardClick(ProductModel currentProduct, int currentPosition) {
         if(!choosing)
         {
-            if(getHowManySelected() > 0)
+            if(isSomethingSelected())
             {
                 changeSelectionOfProduct(currentPosition);
             }

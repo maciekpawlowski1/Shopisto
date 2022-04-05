@@ -201,7 +201,7 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
 
     @Override
     public void onBackPressed() {
-        if(adapter.getHowManySelected() == 0)
+        if(!adapter.isSomethingSelected())
         {
             super.onBackPressed();
         }

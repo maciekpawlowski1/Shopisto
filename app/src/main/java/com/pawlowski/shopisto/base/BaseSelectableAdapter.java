@@ -6,7 +6,8 @@ import java.util.List;
 import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class BaseSelectableAdapter<ViewHolder extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<ViewHolder> {
-    ArrayList<Boolean> positionsSelected = new ArrayList<>();
+
+    private final List<Boolean> positionsSelected = new ArrayList<>();
 
     protected void initNewSelections(int positionsNumber)
     {
@@ -53,7 +54,7 @@ public abstract class BaseSelectableAdapter<ViewHolder extends RecyclerView.View
         return selectedPositions;
     }
 
-    protected int getNumberOfSelectedElements()
+    public int getNumberOfSelectedElements()
     {
         int number = 0;
         for(int i=0;i<positionsSelected.size();i++)
@@ -88,6 +89,18 @@ public abstract class BaseSelectableAdapter<ViewHolder extends RecyclerView.View
         positionsSelected.set(position, false);
     }
 
+    protected void changeSelectionOfElement(int position)
+    {
+        if(positionsSelected.get(position))
+        {
+            positionsSelected.set(position, false);
+        }
+        else
+        {
+            positionsSelected.set(position, true);
+        }
+    }
+
     protected void deleteElement(int position)
     {
         positionsSelected.remove(position);
@@ -103,6 +116,18 @@ public abstract class BaseSelectableAdapter<ViewHolder extends RecyclerView.View
         for(int i=0;i<positionsSelected.size();i++)
         {
             positionsSelected.set(i, false);
+        }
+    }
+
+    protected void unselectAllElementsAndNotify()
+    {
+        for(int i=0;i<positionsSelected.size();i++)
+        {
+            if(positionsSelected.get(i))
+            {
+                positionsSelected.set(i, false);
+                notifyItemChanged(i);
+            }
         }
     }
 }
