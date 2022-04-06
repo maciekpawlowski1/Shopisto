@@ -8,6 +8,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo_shopisto_round"
         android:supportsRtl="true"
+        android:name=".base.MyApplication"
         android:theme="@style/Theme.MojaListaZakupów">
         <activity
             android:name=".account.privacy_policy_activity.PrivacyPolicyActivity"

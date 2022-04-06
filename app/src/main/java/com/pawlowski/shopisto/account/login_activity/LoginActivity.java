@@ -33,6 +33,8 @@ import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.main.MainActivity;
 import com.pawlowski.shopisto.R;
 
+import javax.inject.Inject;
+
 public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginButtonsClickListener {
 
 
@@ -41,6 +43,9 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
 
     private LoginViewMvc viewMvc;
     private GoogleSignInClient mGoogleSignInClient;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context)
     {
@@ -51,7 +56,8 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new LoginViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newLoginViewMvcInstance(null);
         viewMvc.registerListener(this);
         setContentView(viewMvc.getRootView());
         if(FirebaseAuth.getInstance().getCurrentUser() == null)
@@ -204,7 +210,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
         if(isOfflineModeOn())
         {
             turnOffOfflineMode();
-            OnlineDBHandler.saveAfterOfflineMode(DBHandler.getInstance(getApplicationContext()));
+            OnlineDBHandler.saveAfterOfflineMode(dbHandler);
         }
         else
         {

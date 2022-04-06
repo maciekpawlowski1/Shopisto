@@ -9,15 +9,40 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.di.activity.ActivityComponent;
+import com.pawlowski.shopisto.di.activity.ActivityModule;
+import com.pawlowski.shopisto.di.presentation.PresentationComponent;
+import com.pawlowski.shopisto.di.presentation.PresentationModule;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class BaseActivity extends AppCompatActivity {
+
+    private ActivityComponent activityComponent;
+    private PresentationComponent presentationComponent;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
+    }
+
+    public ActivityComponent getActivityComponent() {
+        if(activityComponent == null)
+        {
+            activityComponent = ((MyApplication)getApplication()).getAppComponent().newActivityComponent(new ActivityModule(this));
+        }
+        return activityComponent;
+    }
+
+    public PresentationComponent getPresentationComponent()
+    {
+        if(presentationComponent == null)
+        {
+            presentationComponent = getActivityComponent().newPresentationComponent(new PresentationModule());
+        }
+        return presentationComponent;
     }
 
     private Dialog progressDialog;

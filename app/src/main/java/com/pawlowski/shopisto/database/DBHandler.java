@@ -32,7 +32,7 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "ShoppingListsDatabase";
     private static final int DATABASE_VERSION = 18;
 
-    private DBHandler(@Nullable Context context) {
+    public DBHandler(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
