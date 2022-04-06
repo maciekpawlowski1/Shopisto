@@ -18,7 +18,7 @@ public class AddGroupViewMvc extends BaseObservableViewMvc<AddGroupViewMvc.AddGr
     private final TextInputEditText tittleInput;
     private final Button createButton;
 
-    AddGroupViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public AddGroupViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_add_group, viewGroup, false);
         tittleInput = findViewById(R.id.tittle_input_group_creating);

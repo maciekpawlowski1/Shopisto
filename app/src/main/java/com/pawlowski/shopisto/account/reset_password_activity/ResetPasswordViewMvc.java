@@ -20,7 +20,7 @@ public class ResetPasswordViewMvc extends BaseObservableViewMvc<ResetPasswordVie
     private final Button resetButton;
     private final TextInputEditText mailInput;
 
-    ResetPasswordViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public ResetPasswordViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_reset_password, viewGroup, false);
         backButton = findViewById(R.id.back_button_reset);

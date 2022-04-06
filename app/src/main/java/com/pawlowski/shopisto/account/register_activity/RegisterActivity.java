@@ -20,9 +20,13 @@ import com.pawlowski.shopisto.account.privacy_policy_activity.PrivacyPolicyActiv
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 
+import javax.inject.Inject;
+
 public class RegisterActivity extends BaseActivity implements RegisterViewMvc.RegisterButtonsClickListener {
 
     private RegisterViewMvc viewMvc;
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context)
     {
@@ -33,7 +37,8 @@ public class RegisterActivity extends BaseActivity implements RegisterViewMvc.Re
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new RegisterViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newRegisterViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
 
@@ -89,7 +94,7 @@ public class RegisterActivity extends BaseActivity implements RegisterViewMvc.Re
                 if(isOfflineModeOn())
                 {
                     turnOffOfflineMode();
-                    OnlineDBHandler.saveAfterOfflineMode(DBHandler.getInstance(getApplicationContext()));
+                    OnlineDBHandler.saveAfterOfflineMode(dbHandler);
                 }
 
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();

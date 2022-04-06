@@ -14,9 +14,14 @@ import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 public class AddGroupActivity extends BaseActivity implements AddGroupViewMvc.AddGroupButtonsClickListener {
 
     private AddGroupViewMvc viewMvc;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context)
     {
@@ -27,7 +32,8 @@ public class AddGroupActivity extends BaseActivity implements AddGroupViewMvc.Ad
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new AddGroupViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newAddGroupViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
         getSupportActionBar().setTitle(getString(R.string.create_group));
@@ -53,11 +59,10 @@ public class AddGroupActivity extends BaseActivity implements AddGroupViewMvc.Ad
             String key = "offline";
             if(!isOfflineModeOn())
                 key = OnlineDBHandler.insertNewGroup(tittle);
-            DBHandler db = DBHandler.getInstance(getApplicationContext());
             GroupModel group = new GroupModel(tittle);
             group.setKey(key);
-            db.insertGroup(group, Calendar.getInstance().getTime().getTime()+"");
-            int id = db.getIdOfLastGroup();
+            dbHandler.insertGroup(group, Calendar.getInstance().getTime().getTime()+"");
+            int id = dbHandler.getIdOfLastGroup();
 
             GroupActivity.launch(this, id, tittle, key);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);

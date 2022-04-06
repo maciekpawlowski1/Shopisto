@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import androidx.annotation.Nullable;
 
 public class AddProductsToListActivity extends BaseActivity implements AddProductsToListViewMvc.AddProductsToListButtonsClickListener {
@@ -30,6 +32,9 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
     private CountDownTimer stopTimer;
     private boolean changingActivity = false;
     private boolean offlineMode = false;
+
+    @Inject
+    DBHandler dbHandler;
 
     private AddProductsToListViewMvc viewMvc;
 
@@ -44,6 +49,7 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getPresentationComponent().inject(this);
         viewMvc = new AddProductsToListViewMvc(getLayoutInflater(), null);
         setContentView(viewMvc.getRootView());
 
@@ -58,7 +64,7 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
 
         adapter = new AddedProductsAdapter(this, listId, listKey, offlineMode);
         viewMvc.setRecyclerAdapter(adapter);
-        adapter.setProducts(DBHandler.getInstance(getApplicationContext()).getAllProductOfList(listId));
+        adapter.setProducts(dbHandler.getAllProductOfList(listId));
 
 
         stopTimer = new CountDownTimer(10000, 6000) {
@@ -91,8 +97,8 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
         ProductModel newProduct = new ProductModel(tittle, " ", false, 1);
         adapter.addProductAtBegining(newProduct);
         viewMvc.scrollRecyclerToTheTop();
-        DBHandler.getInstance(getApplicationContext()).insertProduct(newProduct, listId);
-        newProduct.setId(DBHandler.getInstance(getApplicationContext()).getIdOfLastProduct());
+        dbHandler.insertProduct(newProduct, listId);
+        newProduct.setId(dbHandler.getIdOfLastProduct());
     }
 
     public void resetTimer()
@@ -164,7 +170,7 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
 
     public void loadFriendsFromList()
     {
-        friendsFromList = DBHandler.getInstance(getApplicationContext()).getFriendsWithoutNicknamesFromThisList(listId);
+        friendsFromList = dbHandler.getFriendsWithoutNicknamesFromThisList(listId);
     }
 
 

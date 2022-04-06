@@ -29,7 +29,7 @@ public class ResetPasswordActivity extends BaseActivity implements ResetPassword
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new ResetPasswordViewMvc(getLayoutInflater(), null);
+        viewMvc = getPresentationComponent().viewMvcFactory().newResetPasswordViewMvcInstance(null);
         viewMvc.registerListener(this);
         setContentView(viewMvc.getRootView());
 

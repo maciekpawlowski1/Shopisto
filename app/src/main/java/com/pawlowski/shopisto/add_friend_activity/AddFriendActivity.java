@@ -22,6 +22,8 @@ import com.pawlowski.shopisto.models.FriendModel;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.AddFriendButtonsClickListener {
 
     private int listId;
@@ -31,6 +33,9 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
     private String foundFriendUid;
 
     private AddFriendViewMvc viewMvc;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context, int listId, String listTittle, String listKey)
     {
@@ -44,7 +49,8 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new AddFriendViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newAddFriendViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
         getSupportActionBar().setTitle(getString(R.string.find_friend));
@@ -134,7 +140,7 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
                         if(snapshot.exists())
                         {
 
-                            if(!DBHandler.getInstance(getApplicationContext()).isThisUserYourFriend(mail))
+                            if(!dbHandler.isThisUserYourFriend(mail))
                             {
                                 Map<String, Object> mapa = (Map<String, Object>) snapshot.getValue();
                                 foundFriendUid = mapa.keySet().toArray()[0].toString();
@@ -177,7 +183,7 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
         viewMvc.hideUserFound();
         FriendModel friend = new FriendModel("", viewMvc.getMailInputText(), false, false);
         friend.setUid(foundFriendUid);
-        DBHandler.getInstance(getApplicationContext()).addFriend(friend);
+        dbHandler.addFriend(friend);
         //FirebaseDatabase.getInstance().goOnline();
         OnlineDBHandler.addFriend(friend, foundFriendUid);
         showErrorSnackbar(getString(R.string.friend_succesfully_added), false);

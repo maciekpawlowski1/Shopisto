@@ -29,7 +29,7 @@ public class AddFriendViewMvc extends BaseObservableViewMvc<AddFriendViewMvc.Add
     private final TextView userNotFoundTextView;
     private final ImageView userNotFoundImage;
 
-    AddFriendViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public AddFriendViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_add_friend, viewGroup, false);
         mailInput = findViewById(R.id.mail_input_add_friend);
