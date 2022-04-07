@@ -12,7 +12,6 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.models.FriendModel;
 import com.pawlowski.shopisto.models.ProductModel;
-import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPresentationComponent().inject(this);
-        viewMvc = new AddProductsToListViewMvc(getLayoutInflater(), null);
+        viewMvc = getPresentationComponent().viewMvcFactory().newAddProductsToListViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
         Bundle bundle = getIntent().getExtras();
@@ -95,7 +94,7 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
         viewMvc.resetProductTittleInput();
         adapter.turnOffSuggesting();
         ProductModel newProduct = new ProductModel(tittle, " ", false, 1);
-        adapter.addProductAtBegining(newProduct);
+        adapter.addProductAtBeginning(newProduct);
         viewMvc.scrollRecyclerToTheTop();
         dbHandler.insertProduct(newProduct, listId);
         newProduct.setId(dbHandler.getIdOfLastProduct());

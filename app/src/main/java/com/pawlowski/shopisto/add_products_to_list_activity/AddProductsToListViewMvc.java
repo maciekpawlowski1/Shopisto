@@ -29,7 +29,7 @@ public class AddProductsToListViewMvc extends BaseObservableViewMvc<AddProductsT
 
 
 
-    AddProductsToListViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public AddProductsToListViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_add_products_to_list, viewGroup, false);
         backButton = findViewById(R.id.back_button_add_products_to_list);

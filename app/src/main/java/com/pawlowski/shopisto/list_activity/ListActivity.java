@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import androidx.annotation.NonNull;
 
 public class ListActivity extends BaseActivity implements ListActivityViewMvc.ListActivityButtonsClickListener {
@@ -65,6 +67,9 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
     private ListActivityViewMvc viewMvc;
 
+    @Inject
+    DBHandler dbHandler;
+
     public static void launch(Context context, int listId, String listTittle, String listKey, boolean justCreated)
     {
         Intent i = new Intent(context, ListActivity.class);
@@ -78,8 +83,8 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new ListActivityViewMvc(getLayoutInflater(), null);
-
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newListActivityViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
         Bundle bundle = getIntent().getExtras();
@@ -169,7 +174,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                                 //Log.d("checking", timestamp+"");
                                 resetTimersAndStartStop();
 
-                                if(!DBHandler.getInstance(getApplicationContext()).isListSynced(listKey, timestamp))
+                                if(!dbHandler.isListSynced(listKey, timestamp))
                                 {
                                     Log.d("syncing", "Not synced");
                                     saveDownloadTime();
@@ -211,7 +216,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                             if(snapshot.exists())
                             {
                                 String timestamp = snapshot.getValue().toString();
-                                if(!DBHandler.getInstance(getApplicationContext()).areListFriendsSynced(listKey, timestamp))
+                                if(!dbHandler.areListFriendsSynced(listKey, timestamp))
                                 {
                                     Log.d("syncing", "friends not synced");
 
@@ -240,7 +245,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                                                 }
                                             }
 
-                                            DBHandler.getInstance(getApplicationContext()).syncListFriends(mails, listId, owner, timestamp, listKey);
+                                            dbHandler.syncListFriends(mails, listId, owner, timestamp, listKey);
                                             loadFriends();
                                         }
                                     });
@@ -314,7 +319,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                 if(dataSnapshot.exists())
                 {
                     String timestamp = dataSnapshot.getValue().toString();
-                    if(!DBHandler.getInstance(getApplicationContext()).isListSynced(listKey, timestamp))
+                    if(!dbHandler.isListSynced(listKey, timestamp))
                     {
                         Log.d("syncingA", "Not synced");
                         saveDownloadTime();
@@ -415,12 +420,12 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
                         //Log.d("downloading", product.toString());
                     }
 
-                    DBHandler.getInstance(getApplicationContext()).syncList(newProducts, listId);
+                    dbHandler.syncList(newProducts, listId);
                     loadProductsInAsyncTask();
                 }
 
                 if(timestamp.length() != 0)
-                    DBHandler.getInstance(getApplicationContext()).updateListDownloadTimestamp(listKey, timestamp);
+                    dbHandler.updateListDownloadTimestamp(listKey, timestamp);
 
 
             }
@@ -477,7 +482,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
     public void loadFriends()
     {
-        friendsFromList = DBHandler.getInstance(getApplicationContext()).getFriendsWithoutNicknamesFromThisList(listId);
+        friendsFromList = dbHandler.getFriendsWithoutNicknamesFromThisList(listId);
 
     }
 

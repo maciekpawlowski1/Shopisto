@@ -22,7 +22,7 @@ public class ShareActivityViewMvc extends BaseObservableViewMvc<ShareActivityVie
     private final RecyclerView recycler;
     private final TextView textView;
 
-    ShareActivityViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public ShareActivityViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_share, viewGroup, false);
         imageButton = findViewById(R.id.image_button_share);

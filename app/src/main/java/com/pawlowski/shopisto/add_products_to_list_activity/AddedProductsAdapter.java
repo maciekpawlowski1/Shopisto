@@ -165,7 +165,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         notifyItemRangeChanged(0, addedProducts.size());
     }
 
-    public void addProductAtBegining(ProductModel product)
+    public void addProductAtBeginning(ProductModel product)
     {
         addedProducts.add(0, product);
         notifyItemInserted(0);

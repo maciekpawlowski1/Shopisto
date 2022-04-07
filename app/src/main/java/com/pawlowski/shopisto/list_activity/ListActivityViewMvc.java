@@ -35,7 +35,7 @@ public class ListActivityViewMvc extends BaseObservableViewMvc<ListActivityViewM
 
     private boolean buttonsVisibility = false;
 
-    ListActivityViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public ListActivityViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_list, viewGroup, false);
         addButton = findViewById(R.id.add_button_list);

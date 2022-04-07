@@ -17,6 +17,8 @@ import com.pawlowski.shopisto.share_activity.ShareActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import androidx.annotation.NonNull;
 
 public class ChooseProductsFromGroupActivity extends BaseActivity {
@@ -26,6 +28,9 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
     private String listKey;
     private ProductsInGroupAdapter adapter;
     private ChooseProductsFromGroupViewMvc viewMvc;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context, int listId, int groupId, String groupKey, String listKey)
     {
@@ -40,7 +45,8 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new ChooseProductsFromGroupViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newChooseProductsFromGroupViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
         getSupportActionBar().setTitle(getString(R.string.choose_products));
 
@@ -54,7 +60,7 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
         adapter = new ProductsInGroupAdapter(this, groupId, true, groupKey);
         viewMvc.setRecyclerAdapter(adapter);
 
-        adapter.setProducts(DBHandler.getInstance(getApplicationContext()).getAllProductsFromGroup(groupId));
+        adapter.setProducts(dbHandler.getAllProductsFromGroup(groupId));
     }
 
     private boolean addSelectedProductsToList()
@@ -64,13 +70,13 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
             return false;
         else
         {
-            ArrayList<ProductModel>listProducts = new ArrayList<>(DBHandler.getInstance(getApplicationContext()).getAllProductOfList(listId));
+            ArrayList<ProductModel>listProducts = new ArrayList<>(dbHandler.getAllProductOfList(listId));
             ArrayList<ProductModel>productsToAddOnline = new ArrayList<>();
             for(ProductModel p:selectedProducts)
             {
                 if(!isSuchTittleInProductList(p.getTittle(), listProducts))
                 {
-                    DBHandler.getInstance(getApplicationContext()).insertProduct(p, listId);
+                    dbHandler.insertProduct(p, listId);
                     productsToAddOnline.add(p);
                 }
             }
@@ -78,7 +84,7 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
             if(productsToAddOnline.size() > 0 && !isOfflineModeOn())
             {
                 OnlineDBHandler.addManyProductsWithDescription(listKey, productsToAddOnline,
-                        DBHandler.getInstance(getApplicationContext())
+                        dbHandler
                                 .getFriendsWithoutNicknamesFromThisList(listId));
 
             }

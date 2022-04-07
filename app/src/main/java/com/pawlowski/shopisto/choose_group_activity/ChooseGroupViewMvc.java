@@ -24,7 +24,7 @@ public class ChooseGroupViewMvc extends BaseObservableViewMvc<ChooseGroupViewMvc
     private final TextView text;
     private final FloatingActionButton button;
 
-    ChooseGroupViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public ChooseGroupViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_choose_group, viewGroup, false);
         recyclerView = findViewById(R.id.recycler_choose_groups);

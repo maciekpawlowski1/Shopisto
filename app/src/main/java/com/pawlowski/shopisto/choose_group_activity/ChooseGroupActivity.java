@@ -12,6 +12,8 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.main.ProductGroupsAdapter;
 import com.pawlowski.shopisto.share_activity.ShareActivity;
 
+import javax.inject.Inject;
+
 import androidx.annotation.NonNull;
 
 public class ChooseGroupActivity extends BaseActivity implements ChooseGroupViewMvc.ChooseGroupButtonsClickListener {
@@ -20,6 +22,8 @@ public class ChooseGroupActivity extends BaseActivity implements ChooseGroupView
 
     private ProductGroupsAdapter adapter;
     private ChooseGroupViewMvc viewMvc;
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context, int listId, String listKey)
     {
@@ -32,7 +36,8 @@ public class ChooseGroupActivity extends BaseActivity implements ChooseGroupView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new ChooseGroupViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newChooseGroupViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
         getSupportActionBar().setTitle(getString(R.string.choose_group));
 
@@ -50,7 +55,7 @@ public class ChooseGroupActivity extends BaseActivity implements ChooseGroupView
     protected void onStart() {
         super.onStart();
         viewMvc.registerListener(this);
-        adapter.setGroups(DBHandler.getInstance(getApplicationContext()).getAllGroups());
+        adapter.setGroups(dbHandler.getAllGroups());
         if(adapter.getItemCount() == 0)
         {
             viewMvc.showNoGroupsImages();

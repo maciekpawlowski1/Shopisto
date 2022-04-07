@@ -19,6 +19,8 @@ import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.models.ProductModel;
 import com.pawlowski.shopisto.share_activity.ShareActivity;
 
+import javax.inject.Inject;
+
 public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.GroupActivityButtonsClickListener {
 
     private int groupId;
@@ -35,6 +37,9 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
 
     private GroupActivityViewMvc viewMvc;
 
+    @Inject
+    DBHandler dbHandler;
+
     public static void launch(Context context, int groupId, String groupTittle, String groupKey)
     {
         Intent i = new Intent(context, GroupActivity.class);
@@ -47,7 +52,8 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new GroupActivityViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newGroupActivityViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
         Bundle bundle = getIntent().getExtras();
@@ -76,7 +82,7 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
             FirebaseDatabase.getInstance().goOnline();
 
 
-        adapter.setProducts(DBHandler.getInstance(getApplicationContext()).getAllProductsFromGroup(groupId));
+        adapter.setProducts(dbHandler.getAllProductsFromGroup(groupId));
 
         if(adapter.getItemCount() == 0)
         {

@@ -24,7 +24,7 @@ public class GroupActivityViewMvc extends BaseObservableViewMvc<GroupActivityVie
     private final RecyclerView recycler;
     private final FloatingActionButton addButton;
 
-    GroupActivityViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
+    public GroupActivityViewMvc(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup viewGroup)
     {
         rootView = layoutInflater.inflate(R.layout.activity_group, viewGroup, false);
         recycler = findViewById(R.id.recycler_products_in_groups);

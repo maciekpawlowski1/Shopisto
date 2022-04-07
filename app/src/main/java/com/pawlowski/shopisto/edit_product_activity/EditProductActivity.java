@@ -19,6 +19,8 @@ import com.pawlowski.shopisto.share_activity.ShareActivity;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -36,6 +38,9 @@ public class EditProductActivity extends BaseActivity implements EditProductView
 
     private EditProductViewMvc viewMvc;
     private CategoryAdapter adapter;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launchFromLists(Context context, int listId, String listTittle, String listKey, boolean groups, int categoryId, ProductModel product)
     {
@@ -65,7 +70,8 @@ public class EditProductActivity extends BaseActivity implements EditProductView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new EditProductViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newEditProductViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
         Toolbar toolbar = findViewById(R.id.toolbar_edit_product);
 
@@ -170,9 +176,9 @@ public class EditProductActivity extends BaseActivity implements EditProductView
         {
             if(!isOfflineModeOn())
                 OnlineDBHandler.updateProduct(listKey, product, !product.getTittle().equals(previousTittle), previousTittle,
-                        DBHandler.getInstance(getApplicationContext()).getFriendsWithoutNicknamesFromThisList(listId));
+                        dbHandler.getFriendsWithoutNicknamesFromThisList(listId));
 
-            DBHandler.getInstance(getApplicationContext()).updateProduct(product);
+            dbHandler.updateProduct(product);
         }
         else
         {
@@ -181,15 +187,15 @@ public class EditProductActivity extends BaseActivity implements EditProductView
             {
                 if(!isOfflineModeOn())
                     OnlineDBHandler.updateProductInGroup(product, groupKey, !product.getTittle().equals(previousTittle), previousTittle);
-                DBHandler.getInstance(getApplicationContext()).updateProductInGroup(product);
+                dbHandler.updateProductInGroup(product);
             }
             else
             {
                 if(!isOfflineModeOn())
                     OnlineDBHandler.updateProductInGroup(product, groupKey, false, "");
-                DBHandler.getInstance(getApplicationContext()).insertProductToGroup(product, groupId);
+                dbHandler.insertProductToGroup(product, groupId);
             }
-            DBHandler.getInstance(getApplicationContext()).increaseGroupTimestamp(groupKey);
+            dbHandler.increaseGroupTimestamp(groupKey);
         }
 
         return true;

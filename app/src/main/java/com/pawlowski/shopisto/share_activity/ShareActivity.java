@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pawlowski.shopisto.R;
 import com.pawlowski.shopisto.account.login_activity.LoginActivity;
 import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
+import com.pawlowski.shopisto.base.BaseActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.list_activity.ListActivity;
@@ -23,10 +24,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ShareActivity extends AppCompatActivity implements ShareActivityViewMvc.ShareActivityButtonsClickListener {
+public class ShareActivity extends BaseActivity implements ShareActivityViewMvc.ShareActivityButtonsClickListener {
 
     private static final int SECONDS_TO_NEXT_SELF_DOWNLOAD = 300;
 
@@ -42,6 +45,9 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
 
     private ShareActivityViewMvc viewMvc;
 
+    @Inject
+    DBHandler dbHandler;
+
     public static void launch(Context context, int listId, String listTittle, String listKey)
     {
         Intent i = new Intent(context, ShareActivity.class);
@@ -54,7 +60,8 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewMvc = new ShareActivityViewMvc(getLayoutInflater(), null);
+        getPresentationComponent().inject(this);
+        viewMvc = getPresentationComponent().viewMvcFactory().newShareActivityViewMvcInstance(null);
         setContentView(viewMvc.getRootView());
 
         getSupportActionBar().setTitle(getString(R.string.share_list));
@@ -78,8 +85,8 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
         if(canIDownload())
         {
             FirebaseDatabase.getInstance().goOnline();
-            OnlineDBHandler.downloadAllFriendsAndSync(DBHandler.getInstance(getApplicationContext()),
-                    DBHandler.getInstance(getApplicationContext()).getAllFriends(), new OnlineDBHandler.ActionWhenSuccess() {
+            OnlineDBHandler.downloadAllFriendsAndSync(dbHandler,
+                    dbHandler.getAllFriends(), new OnlineDBHandler.ActionWhenSuccess() {
                         @Override
                         public void action() {
                             saveDownloadTime();
@@ -97,7 +104,7 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
         listTittle = bundle.getString("listTittle");
         listKey = bundle.getString("listKey");
 
-        amIOwner = DBHandler.getInstance(getApplicationContext()).amIListOwner(listId);
+        amIOwner = dbHandler.amIListOwner(listId);
         //Log.d("owner", amIOwner+"");
 
         if(amIOwner)
@@ -135,10 +142,10 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
     public void loadFriends()
     {
         if(amIOwner)
-            adapter.setFriends(DBHandler.getInstance(getApplicationContext()).getAllFriendsToShareActivity(listId));
+            adapter.setFriends(dbHandler.getAllFriendsToShareActivity(listId));
         else
         {
-            adapter.setFriends(DBHandler.getInstance(getApplicationContext()).getFriendsWithoutNicknamesFromThisList(listId));
+            adapter.setFriends(dbHandler.getFriendsWithoutNicknamesFromThisList(listId));
         }
     }
 
@@ -174,17 +181,6 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
 
     private void shareAction()
     {
-        /*Intent myIntent = new Intent(Intent.ACTION_SEND);
-        myIntent.setType("text/plain");
-
-        List<ProductModel> products = DBHandler.getInstance(getApplicationContext()).getAllProductOfList(listId);
-
-
-        String shareBody = getBody(products);
-        String shareSub = listTittle;
-        myIntent.putExtra(Intent.EXTRA_SUBJECT, shareSub);
-        myIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-        startActivity(Intent.createChooser(myIntent, getString(R.string.share_using)));*/
         shareAction(listTittle, listId, ShareActivity.this);
     }
 
@@ -193,7 +189,7 @@ public class ShareActivity extends AppCompatActivity implements ShareActivityVie
         Intent myIntent = new Intent(Intent.ACTION_SEND);
         myIntent.setType("text/plain");
 
-        List<ProductModel> products = DBHandler.getInstance(activity. getApplicationContext()).getAllProductOfList(listId);
+        List<ProductModel> products = DBHandler.getInstance(activity.getApplicationContext()).getAllProductOfList(listId);
 
 
         String shareBody = getBody(products);
