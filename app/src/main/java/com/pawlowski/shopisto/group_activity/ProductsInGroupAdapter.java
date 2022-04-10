@@ -1,6 +1,5 @@
 package com.pawlowski.shopisto.group_activity;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +28,15 @@ public class ProductsInGroupAdapter extends BaseSelectableAdapter<ProductsInGrou
     private final int groupId;
     boolean choosing = false;
     String groupKey;
+    private final DBHandler dbHandler;
 
-    public ProductsInGroupAdapter(BaseActivity activity, int groupId, boolean choosing, String groupKey)
+    public ProductsInGroupAdapter(BaseActivity activity, int groupId, boolean choosing, String groupKey, DBHandler dbHandler)
     {
         this.activity = activity;
         this.groupId = groupId;
         this.choosing = choosing;
         this.groupKey = groupKey;
+        this.dbHandler = dbHandler;
     }
 
     @NonNull
@@ -84,13 +85,13 @@ public class ProductsInGroupAdapter extends BaseSelectableAdapter<ProductsInGrou
         if(selectedProducts.size() > 0) {
             if(!activity.isOfflineModeOn())
                 OnlineDBHandler.deleteProductsInGroup(selectedProducts, groupKey);
-            DBHandler.getInstance(activity.getApplicationContext()).increaseGroupTimestamp(groupKey);
+            dbHandler.increaseGroupTimestamp(groupKey);
         }
 
         for(ProductModel p:selectedProducts)
         {
 
-            DBHandler.getInstance(activity.getApplicationContext()).deleteProductFromGroup(p);
+            dbHandler.deleteProductFromGroup(p);
             products.remove(p);
             //positionsSelected.remove()
         }
@@ -113,11 +114,11 @@ public class ProductsInGroupAdapter extends BaseSelectableAdapter<ProductsInGrou
 
                 if(!activity.isOfflineModeOn())
                     OnlineDBHandler.addManyProductsInGroup(selectedProducts, groupKey);
-                DBHandler.getInstance(activity.getApplicationContext()).increaseGroupTimestamp(groupKey);
+                dbHandler.increaseGroupTimestamp(groupKey);
                 for(ProductModel p:selectedProducts)
                 {
 
-                    DBHandler.getInstance(activity.getApplicationContext()).insertProductToGroup(p, groupId);
+                    dbHandler.insertProductToGroup(p, groupId);
                     products.add(p);
                 }
                 resetPositionsSelected();

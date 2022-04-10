@@ -61,7 +61,7 @@ public class AddProductsToListActivity extends BaseActivity implements AddProduc
 
         //FirebaseDatabase.getInstance().goOnline();
 
-        adapter = new AddedProductsAdapter(this, listId, listKey, offlineMode);
+        adapter = new AddedProductsAdapter(this, listId, listKey, offlineMode, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
         adapter.setProducts(dbHandler.getAllProductOfList(listId));
 

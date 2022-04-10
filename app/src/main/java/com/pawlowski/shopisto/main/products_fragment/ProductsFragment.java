@@ -56,15 +56,18 @@ public class ProductsFragment extends MyFragmentHolder implements ProductsFragme
     CountDownTimer stopTimer;
 
     MainActivity activity;
+    private final DBHandler dbHandler;
 
     private ProductsFragmentViewMvc viewMvc;
 
     public ProductsFragment() {
         // Required empty public constructor
+        throw new RuntimeException("Wrong constructor");
     }
 
-    public ProductsFragment(MainActivity activity) {
+    public ProductsFragment(MainActivity activity, DBHandler dbHandler) {
         this.activity = activity;
+        this.dbHandler = dbHandler;
     }
 
 
@@ -81,7 +84,7 @@ public class ProductsFragment extends MyFragmentHolder implements ProductsFragme
                              Bundle savedInstanceState) {
         viewMvc = new ProductsFragmentViewMvc(inflater, container);
 
-        adapter = new ProductGroupsAdapter(activity, false, -1, this);
+        adapter = new ProductGroupsAdapter(activity, false, -1, this, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
         viewMvc.hideNoGroupsItems();
 
@@ -160,7 +163,7 @@ public class ProductsFragment extends MyFragmentHolder implements ProductsFragme
 
     public void loadGroups()
     {
-        adapter.setGroups(DBHandler.getInstance(getActivity().getApplicationContext()).getAllGroups());
+        adapter.setGroups(dbHandler.getAllGroups());
         if(adapter.getItemCount() == 0)
             viewMvc.showNoGroupsItems();
         else
@@ -215,9 +218,6 @@ public class ProductsFragment extends MyFragmentHolder implements ProductsFragme
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String uid = user.getUid();
         String userEmail = user.getEmail();
-        DBHandler dbHandler = DBHandler.getInstance(getActivity().getApplicationContext());
-
-
 
         FirebaseDatabase.getInstance().getReference().child("t").
                 child(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
@@ -302,7 +302,7 @@ public class ProductsFragment extends MyFragmentHolder implements ProductsFragme
                 }
                 else
                 {
-                    DBHandler.getInstance(getActivity().getApplicationContext()).deleteAllGroups();
+                    dbHandler.deleteAllGroups();
                     loadGroups();
                     if(!changingActivity)
                     {

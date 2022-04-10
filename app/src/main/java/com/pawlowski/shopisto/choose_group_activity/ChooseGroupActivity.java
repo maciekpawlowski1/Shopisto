@@ -45,7 +45,7 @@ public class ChooseGroupActivity extends BaseActivity implements ChooseGroupView
         int listId = bundle.getInt("listId", -1);
         listKey = bundle.getString("listKey", "");
 
-        adapter = new ProductGroupsAdapter(this, true, listId, null);
+        adapter = new ProductGroupsAdapter(this, true, listId, null, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
 
 

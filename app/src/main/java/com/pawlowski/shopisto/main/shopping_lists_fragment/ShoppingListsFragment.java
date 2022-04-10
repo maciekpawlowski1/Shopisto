@@ -51,6 +51,7 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
     private ShoppingListsAdapter adapter;
     private final List<Boolean>downloading = new ArrayList<>();
     private MainActivity activity;
+    private final DBHandler dbHandler;
     private CountDownTimer stopTimer;
 
     private boolean changingActivity = false;
@@ -60,11 +61,13 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
 
     public ShoppingListsFragment() {
         // Required empty public constructor
+        throw new RuntimeException("Wrong constructor");
     }
 
-    public ShoppingListsFragment(MainActivity activity) {
+    public ShoppingListsFragment(MainActivity activity, DBHandler dbHandler) {
         this.activity = activity;
         // Required empty public constructor
+        this.dbHandler = dbHandler;
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
         activity.getSupportActionBar().setTitle(R.string.lists);
 
 
-        adapter = new ShoppingListsAdapter(activity, this);
+        adapter = new ShoppingListsAdapter(activity, this, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
         //adapter.setLists(DBHandler.getInstance(getActivity().getApplicationContext()).getAllLists());
 
@@ -178,7 +181,6 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String uid = user.getUid();
         String userEmail = user.getEmail();
-        DBHandler dbHandler = DBHandler.getInstance(activity.getApplicationContext());
 
 
 
@@ -263,7 +265,7 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
                 else
                 {
                     setListsTimestamp(activity, listsTimestamp);
-                    DBHandler.getInstance(activity.getApplicationContext()).deleteAllLists();
+                    dbHandler.deleteAllLists();
                     loadLists();
                     if(!changingActivity)
                     {
@@ -561,7 +563,7 @@ public class ShoppingListsFragment extends MyFragmentHolder implements ShoppingL
     public void loadLists()
     {
         activity.showProgressDialog(getString(R.string.please_wait));
-        adapter.setLists(DBHandler.getInstance(activity.getApplicationContext()).getAllLists());
+        adapter.setLists(dbHandler.getAllLists());
         if(adapter.getItemCount() == 0)
             showNoListImage();
         else

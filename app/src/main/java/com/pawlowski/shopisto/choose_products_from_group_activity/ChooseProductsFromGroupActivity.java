@@ -57,7 +57,7 @@ public class ChooseProductsFromGroupActivity extends BaseActivity {
         String groupKey = bundle.getString("groupKey");
 
 
-        adapter = new ProductsInGroupAdapter(this, groupId, true, groupKey);
+        adapter = new ProductsInGroupAdapter(this, groupId, true, groupKey, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
 
         adapter.setProducts(dbHandler.getAllProductsFromGroup(groupId));

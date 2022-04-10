@@ -25,13 +25,15 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
     ArrayList<ProductModel>addedProducts = new ArrayList<>();
     ArrayList<String>suggestedProducts = new ArrayList<>();
     boolean offlineMode = false;
+    private final DBHandler dbHandler;
 
-    AddedProductsAdapter(Activity activity, int listId, String listKey, boolean offlineMode)
+    AddedProductsAdapter(Activity activity, int listId, String listKey, boolean offlineMode, DBHandler dbHandler)
     {
         this.activity = activity;
         this.listId = listId;
         this.listKey = listKey;
         this.offlineMode = offlineMode;
+        this.dbHandler = dbHandler;
     }
 
     private final Activity activity;
@@ -111,7 +113,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         ((AddProductsToListActivity)activity).resetTimer();
         FirebaseDatabase.getInstance().goOnline();
         addedProducts.remove(position);
-        DBHandler.getInstance(activity.getApplicationContext()).deleteProduct(product, listId);
+        dbHandler.deleteProduct(product, listId);
         if(!offlineMode)
             OnlineDBHandler.deleteProductWithNotifying(listKey, product.getTittle(), ((AddProductsToListActivity)activity).getFriendsFromList());
 
@@ -129,7 +131,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
                 addedProducts.add(position, product);
                 if(!offlineMode)
                     OnlineDBHandler.addProductWithDescription(listKey, product, ((ListActivity)activity).getFriendsFromList());
-                DBHandler.getInstance(activity.getApplicationContext()).insertProduct(product, listId);
+                dbHandler.insertProduct(product, listId);
 
                 notifyItemInserted(position);
                 notifyItemRangeChanged(0, addedProducts.size());
@@ -145,7 +147,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         addedProducts.remove(product);
         if(!offlineMode)
             OnlineDBHandler.deleteProductWithNotifying(listKey, product.getTittle(), ((AddProductsToListActivity)activity).getFriendsFromList());
-        DBHandler.getInstance(activity.getApplicationContext()).deleteProduct(product, listId);
+        dbHandler.deleteProduct(product, listId);
         notifyItemChanged(position);
 
     }
@@ -192,7 +194,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
     {
         suggestedProducts = new ArrayList<>();
         suggestedProducts.add(0, searchedText);
-        ArrayList<String> allSuggestions = DBHandler.getInstance(activity.getApplicationContext()).getAllTittlesOfProducts();
+        ArrayList<String> allSuggestions = dbHandler.getAllTittlesOfProducts();
         for(int i=0;i<allSuggestions.size();i++)
         {
             String s = allSuggestions.get(i);
@@ -234,7 +236,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
         if(!offlineMode)
             OnlineDBHandler.setNumberOfProduct(listKey, currentProduct, ((AddProductsToListActivity)activity).getFriendsFromList());
         notifyItemChanged(currentPosition);
-        DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
+        dbHandler.updateProduct(currentProduct);
     }
 
     @Override
@@ -260,7 +262,7 @@ public class AddedProductsAdapter extends RecyclerView.Adapter<AddedProductsAdap
             if(!offlineMode)
                 OnlineDBHandler.setNumberOfProduct(listKey, currentProduct, ((AddProductsToListActivity)activity).getFriendsFromList());
             notifyItemChanged(currentPosition);
-            DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
+            dbHandler.updateProduct(currentProduct);
         }
     }
 

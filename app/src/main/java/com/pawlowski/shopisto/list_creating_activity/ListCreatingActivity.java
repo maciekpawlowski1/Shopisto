@@ -17,10 +17,15 @@ import com.pawlowski.shopisto.models.ListModel;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 public class ListCreatingActivity extends BaseActivity {
 
     TextInputEditText tittleInput;
     Button createButton;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context)
     {
@@ -32,6 +37,7 @@ public class ListCreatingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_creating);
+        getPresentationComponent().inject(this);
 
         getSupportActionBar().setTitle(getString(R.string.create_list));
 
@@ -43,15 +49,14 @@ public class ListCreatingActivity extends BaseActivity {
                 String tittle = tittleInput.getText().toString();
                 if(tittle.length() != 0)
                 {
-                    DBHandler db = DBHandler.getInstance(getApplicationContext());
                     String key = "offline";
                     if(!isOfflineModeOn())
                         key = OnlineDBHandler.addNewList(tittle);
                     ShoppingListsFragment.increaseListTimestamp(ListCreatingActivity.this);
                     ListModel newList = new ListModel(tittle, 0, 0, null);
                     newList.setFirebaseKey(key);
-                    db.insertList(newList, Calendar.getInstance().getTime().getTime()+"");
-                    int id = db.getIdOfLastList();
+                    dbHandler.insertList(newList, Calendar.getInstance().getTime().getTime()+"");
+                    int id = dbHandler.getIdOfLastList();
                     Intent i = new Intent(ListCreatingActivity.this, ListActivity.class);
                     i.putExtra("listTittle", tittle);
                     i.putExtra("listId", id);

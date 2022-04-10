@@ -1,7 +1,6 @@
 package com.pawlowski.shopisto.main.shopping_lists_fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +28,14 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
     BaseActivity activity;
     int positionEdited = -1;
     Fragment fragment;
+    private final DBHandler dbHandler;
 
 
-    ShoppingListsAdapter(BaseActivity activity, Fragment fragment)
+    ShoppingListsAdapter(BaseActivity activity, Fragment fragment, DBHandler dbHandler)
     {
         this.activity = activity;
         this.fragment = fragment;
+        this.dbHandler = dbHandler;
     }
 
     @NonNull
@@ -61,7 +62,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
             ((ShoppingListsFragment)fragment).showNoListImage();
         }
         notifyDataSetChanged();
-        DBHandler.getInstance(activity.getApplicationContext()).moveListToTrash(deletedList.getId());
+        dbHandler.moveListToTrash(deletedList.getId());
         Snackbar.make(view, activity.getString(R.string.list_deleted), Snackbar.LENGTH_LONG).setAction(activity.getString(R.string.undo), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +71,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
                     ((ShoppingListsFragment)fragment).hideNoListImage();
                 }
                 lists.add(position, deletedList);
-                DBHandler.getInstance(activity.getApplicationContext()).restoreListFromTrash(deletedList.getId());
+                dbHandler.restoreListFromTrash(deletedList.getId());
                 notifyDataSetChanged();
             }
         }).setActionTextColor(activity.getApplicationContext().getResources().getColor(R.color.blue)).show();
@@ -114,7 +115,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
             ShoppingListsFragment.increaseListTimestamp(activity);
             if(!activity.isOfflineModeOn())
                 OnlineDBHandler.changeListTittle(currentList.getFirebaseKey(), currentList.getTittle());
-            DBHandler.getInstance(activity.getApplicationContext()).updateListTittle(currentList.getId(), currentList.getTittle());
+            dbHandler.updateListTittle(currentList.getId(), currentList.getTittle());
             positionEdited = -1;
             viewMvc.bindList(currentList, currentPosition);
             notifyItemChanged(currentPosition);
@@ -138,7 +139,7 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
             ShoppingListsFragment.increaseListTimestamp(activity);
             if(!activity.isOfflineModeOn())
                 OnlineDBHandler.changeListTittle(currentList.getFirebaseKey(), currentList.getTittle());
-            DBHandler.getInstance(activity.getApplicationContext()).updateListTittle(currentList.getId(), currentList.getTittle());
+            dbHandler.updateListTittle(currentList.getId(), currentList.getTittle());
 
 
             viewMvc.bindList(currentList, currentPosition);
@@ -208,9 +209,9 @@ public class ShoppingListsAdapter extends RecyclerView.Adapter<ShoppingListsAdap
         ShoppingListsFragment.increaseListTimestamp(activity);
         if(!activity.isOfflineModeOn())
             listCopy.setFirebaseKey(OnlineDBHandler.copyList(listCopy));
-        DBHandler.getInstance(activity.getApplicationContext()).copyList(listCopy, activity);
+        dbHandler.copyList(listCopy, activity);
 
-        int id = DBHandler.getInstance(activity.getApplicationContext()).getIdOfLastList();
+        int id = dbHandler.getIdOfLastList();
 
         listCopy.setId(id);
         lists.add(0, listCopy);

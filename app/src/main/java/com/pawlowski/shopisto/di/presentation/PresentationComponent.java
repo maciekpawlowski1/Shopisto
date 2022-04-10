@@ -11,6 +11,8 @@ import com.pawlowski.shopisto.di.ViewMvcFactory;
 import com.pawlowski.shopisto.edit_product_activity.EditProductActivity;
 import com.pawlowski.shopisto.group_activity.GroupActivity;
 import com.pawlowski.shopisto.list_activity.ListActivity;
+import com.pawlowski.shopisto.list_creating_activity.ListCreatingActivity;
+import com.pawlowski.shopisto.main.MainActivity;
 import com.pawlowski.shopisto.share_activity.ShareActivity;
 
 import dagger.Subcomponent;
@@ -31,4 +33,6 @@ public interface PresentationComponent {
     void inject(ShareActivity activity);
     void inject(ChooseProductsFromGroupActivity activity);
     void inject(GroupActivity activity);
+    void inject(MainActivity activity);
+    void inject(ListCreatingActivity activity);
 }

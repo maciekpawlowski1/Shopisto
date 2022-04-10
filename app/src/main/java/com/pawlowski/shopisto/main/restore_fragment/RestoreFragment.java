@@ -20,16 +20,19 @@ public class RestoreFragment extends Fragment {
 
     private RestoreAdapter adapter;
     private MainActivity activity;
+    private final DBHandler dbHandler;
 
     private RestoreFragmentViewMvc viewMvc;
 
     public RestoreFragment() {
         // Required empty public constructor
+        throw new RuntimeException("Wrong constructor");
     }
 
-    public RestoreFragment(MainActivity activity) {
+    public RestoreFragment(MainActivity activity, DBHandler dbHandler) {
         // Required empty public constructor
         this.activity = activity;
+        this.dbHandler = dbHandler;
     }
 
 
@@ -44,7 +47,7 @@ public class RestoreFragment extends Fragment {
                              Bundle savedInstanceState) {
         viewMvc = new RestoreFragmentViewMvc(inflater, container);
 
-        adapter = new RestoreAdapter(getActivity(), this, activity.isOfflineModeOn());
+        adapter = new RestoreAdapter(getActivity(), this, activity.isOfflineModeOn(), dbHandler);
 
         viewMvc.setRecyclerAdapter(adapter);
 
@@ -66,7 +69,7 @@ public class RestoreFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.setListsAndGroups(DBHandler.getInstance(getActivity().getApplicationContext()).getListsAndGroupsFromTrash());
+        adapter.setListsAndGroups(dbHandler.getListsAndGroupsFromTrash());
 
         if(adapter.getItemCount() == 0)
         {

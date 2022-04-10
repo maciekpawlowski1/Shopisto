@@ -20,12 +20,14 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendCa
     ShareActivity activity;
     String listKey;
     boolean amIOwner;
+    private final DBHandler dbHandler;
 
-    FriendsAdapter(ShareActivity activity, String listKey, boolean amIOwner)
+    FriendsAdapter(ShareActivity activity, String listKey, boolean amIOwner, DBHandler dbHandler)
     {
         this.activity = activity;
         this.listKey = listKey;
         this.amIOwner = amIOwner;
+        this.dbHandler = dbHandler;
     }
 
     @NonNull
@@ -61,16 +63,16 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendCa
         if(isChecked)
         {
             OnlineDBHandler.addFriendToList(currentFriend, listKey, activity.getListTittle());
-            DBHandler.getInstance(activity.getApplicationContext()).addFriendToList(currentFriend, activity.getListId());
+            dbHandler.addFriendToList(currentFriend, activity.getListId());
             currentFriend.setInList(true);
             OnlineDBHandler.makeChangesInListFriends(listKey,
-                    DBHandler.getInstance(activity.getApplicationContext()).getFriendsFromThisList(activity.getListId()));
+                    dbHandler.getFriendsFromThisList(activity.getListId()));
 
         }
         else
         {
             OnlineDBHandler.removeFriendFromList(currentFriend, listKey);
-            DBHandler.getInstance(activity.getApplicationContext()).removeFriendFromList(currentFriend, activity.getListId());
+            dbHandler.removeFriendFromList(currentFriend, activity.getListId());
             currentFriend.setInList(false);
 
         }

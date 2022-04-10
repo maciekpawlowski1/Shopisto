@@ -30,12 +30,14 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
     private int listId = -1;
     private int positionEdited = -1;
     private final Fragment fragment;
+    private final DBHandler dbHandler;
 
-    public ProductGroupsAdapter(BaseActivity activity, boolean choosing, int listIdIfChoosing, Fragment fragment/*If not choosing, else can be null*/)
+    public ProductGroupsAdapter(BaseActivity activity, boolean choosing, int listIdIfChoosing, Fragment fragment/*If not choosing, else can be null*/, DBHandler dbHandler)
     {
         this.activity = activity;
         this.choosing = choosing;
         this.fragment = fragment;
+        this.dbHandler = dbHandler;
         if(choosing)
             listId = listIdIfChoosing;
     }
@@ -73,7 +75,7 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
         if(groups.size() == 0)
             ((ProductsFragment)fragment).showNoGroupsItems();
 
-        DBHandler.getInstance(activity.getApplicationContext()).moveGroupToTrash(deletedGroup.getId());
+        dbHandler.moveGroupToTrash(deletedGroup.getId());
         Snackbar.make(view, activity.getString(R.string.group_deleted), Snackbar.LENGTH_LONG).setAction(activity.getString(R.string.undo), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +83,7 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
                     ((ProductsFragment)fragment).hideNoGroupsItems();
                 groups.add(position, deletedGroup);
                 notifyDataSetChanged();
-                DBHandler.getInstance(activity.getApplicationContext()).restoreGroupFromTrash(deletedGroup.getId());
+                dbHandler.restoreGroupFromTrash(deletedGroup.getId());
             }
         }).setActionTextColor(activity.getApplicationContext().getResources().getColor(R.color.blue)).show();
 
@@ -145,8 +147,8 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
                 OnlineDBHandler.changeGroupTittle(currentGroup.getKey(), currentGroup.getTittle());
             }
 
-            DBHandler.getInstance(activity.getApplicationContext()).updateGroupTittle(currentGroup.getId(), currentGroup.getTittle());
-            DBHandler.getInstance(activity.getApplicationContext()).increaseGroupTimestamp(currentGroup.getKey());
+            dbHandler.updateGroupTittle(currentGroup.getId(), currentGroup.getTittle());
+            dbHandler.increaseGroupTimestamp(currentGroup.getKey());
 
             viewMvc.hideTittleEditing();
             positionEdited = -1;
@@ -174,9 +176,9 @@ public class ProductGroupsAdapter extends RecyclerView.Adapter<ProductGroupsAdap
         }
         if(!activity.isOfflineModeOn())
             groupCopy.setKey(OnlineDBHandler.insertGroupWithProducts(groupCopy.getTittle(), groupCopy.getProducts()));
-        DBHandler.getInstance(activity.getApplicationContext()).copyGroup(groupCopy, activity);
+        dbHandler.copyGroup(groupCopy, activity);
 
-        int id = DBHandler.getInstance(activity.getApplicationContext()).getIdOfLastGroup();
+        int id = dbHandler.getIdOfLastGroup();
 
         groupCopy.setId(id);
 

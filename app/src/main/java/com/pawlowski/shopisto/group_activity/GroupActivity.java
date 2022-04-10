@@ -62,7 +62,7 @@ public class GroupActivity extends BaseActivity implements GroupActivityViewMvc.
         groupKey = bundle.getString("groupKey");
 
         getSupportActionBar().setTitle(groupTittle);
-        adapter = new ProductsInGroupAdapter(this, groupId, false, groupKey);
+        adapter = new ProductsInGroupAdapter(this, groupId, false, groupKey, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
 
 

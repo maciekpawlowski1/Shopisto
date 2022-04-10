@@ -31,12 +31,14 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
     Activity activity;
     RestoreFragment restoreFragment;
     boolean offlineMode = false;
+    private final DBHandler dbHandler;
 
-    RestoreAdapter(Activity activity, RestoreFragment fragment, boolean offlineMode)
+    RestoreAdapter(Activity activity, RestoreFragment fragment, boolean offlineMode, DBHandler dbHandler)
     {
         this.activity = activity;
         this.restoreFragment = fragment;
         this.offlineMode = offlineMode;
+        this.dbHandler = dbHandler;
     }
 
     @NonNull
@@ -95,7 +97,7 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
     @Override
     public void onListUndoClick(ListModel currentList, int currentPosition) {
         String tittle = currentList.getTittle();
-        DBHandler.getInstance(activity.getApplicationContext()).restoreListFromTrash(currentList.getId());
+        dbHandler.restoreListFromTrash(currentList.getId());
         listsAndGroups.remove(currentPosition);
         notifyItemRemoved(currentPosition);
         notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
@@ -111,7 +113,7 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
 
     @Override
     public void onListDeleteClick(ListModel currentList, int currentPosition) {
-        List<FriendModel>friendsFromList = DBHandler.getInstance(activity.getApplicationContext())
+        List<FriendModel>friendsFromList = dbHandler
                 .getFriendsWithoutNicknamesFromThisList(currentList.getId());
 
 
@@ -124,7 +126,7 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
             OnlineDBHandler.makeChangesInListFriends(currentList.getFirebaseKey(), friendsFromList);
         }
 
-        DBHandler.getInstance(activity.getApplicationContext()).deleteList(currentList.getId());
+        dbHandler.deleteList(currentList.getId());
         listsAndGroups.remove(currentPosition);
         notifyItemRemoved(currentPosition);
         notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
@@ -142,7 +144,7 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
     @Override
     public void onGroupUndoClick(GroupModel currentGroup, int currentPosition) {
         String tittle = currentGroup.getTittle();
-        DBHandler.getInstance(activity.getApplicationContext()).restoreGroupFromTrash(currentGroup.getId());
+        dbHandler.restoreGroupFromTrash(currentGroup.getId());
         listsAndGroups.remove(currentPosition);
         notifyItemRemoved(currentPosition);
         notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);
@@ -162,7 +164,7 @@ public class RestoreAdapter extends RecyclerView.Adapter<RestoreAdapter.RestoreC
         if(!offlineMode)
             OnlineDBHandler.deleteGroup(currentGroup.getKey());
 
-        DBHandler.getInstance(activity.getApplicationContext()).deleteGroup(currentGroup.getId());
+        dbHandler.deleteGroup(currentGroup.getId());
         listsAndGroups.remove(currentPosition);
         notifyItemRemoved(currentPosition);
         notifyItemRangeChanged(currentPosition, listsAndGroups.size()-currentPosition+1);

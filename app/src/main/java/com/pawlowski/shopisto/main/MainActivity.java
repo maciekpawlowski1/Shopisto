@@ -37,6 +37,8 @@ import com.pawlowski.shopisto.main.shopping_lists_fragment.ShoppingListsFragment
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 public class MainActivity extends BaseActivity {
 
     DrawerLayout drawerLayout;
@@ -46,6 +48,9 @@ public class MainActivity extends BaseActivity {
     MyFragmentHolder fragmentHolder = null;
     TextView mailInHeader;
     AdView mAdView;
+
+    @Inject
+    DBHandler dbHandler;
 
     public static void launch(Context context)
     {
@@ -57,6 +62,9 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getPresentationComponent().inject(this);
+
         drawerLayout=findViewById(R.id.drawer);
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
@@ -78,19 +86,19 @@ public class MainActivity extends BaseActivity {
                     case R.id.shopping_lists_menu:
                         if(fragmentHolder != null)
                             fragmentHolder.setChangingActivityTrue();
-                        fragment = new ShoppingListsFragment(MainActivity.this);
+                        fragment = new ShoppingListsFragment(MainActivity.this, dbHandler);
                         fragmentHolder = (MyFragmentHolder) fragment;
                         loadFragment(fragment);
                         break;
                     case R.id.products_menu:
                         if(fragmentHolder != null)
                             fragmentHolder.setChangingActivityTrue();
-                        fragment = new ProductsFragment(MainActivity.this);
+                        fragment = new ProductsFragment(MainActivity.this, dbHandler);
                         fragmentHolder = (MyFragmentHolder) fragment;
                         loadFragment(fragment);
                         break;
                     case R.id.restore_menu:
-                        fragment = new RestoreFragment(MainActivity.this);
+                        fragment = new RestoreFragment(MainActivity.this, dbHandler);
                         fragmentHolder = null;
                         loadFragment(fragment);
 
@@ -99,7 +107,7 @@ public class MainActivity extends BaseActivity {
                         saveLogOutTime();
                         resetListsTimestamp(MainActivity.this);
                         FirebaseAuth.getInstance().signOut();
-                        DBHandler.getInstance(getApplicationContext()).deleteEverything();
+                        dbHandler.deleteEverything();
                         Intent i = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(i);
                         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
@@ -119,7 +127,7 @@ public class MainActivity extends BaseActivity {
             }
         });
         navigationView.setCheckedItem(R.id.shopping_lists_menu);
-        fragmentHolder = new ShoppingListsFragment(MainActivity.this);
+        fragmentHolder = new ShoppingListsFragment(MainActivity.this, dbHandler);
         loadFragment(fragmentHolder);
 
 

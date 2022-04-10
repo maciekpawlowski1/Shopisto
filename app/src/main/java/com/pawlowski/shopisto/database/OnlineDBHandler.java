@@ -175,6 +175,8 @@ public class OnlineDBHandler {
         abstract void action();
     }
 
+    
+
     public static void downloadAllFriendsAndSync(DBHandler dbHandler, List<FriendModel> lastFriends, ActionWhenSuccess actionWhenSuccess)
     {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

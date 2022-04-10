@@ -27,15 +27,17 @@ public class ListAdapter extends BaseSelectableAdapter<ListAdapter.ProductHolder
     private final int listId;
     String listKey;
     boolean offlineMode = false;
+    private final DBHandler dbHandler;
 
 
-    ListAdapter(Activity activity, int listId, String listKey, boolean offlineMode)
+    ListAdapter(Activity activity, int listId, String listKey, boolean offlineMode, DBHandler dbHandler)
     {
         this.activity = activity;
         this.listId = listId;
         this.listKey = listKey;
         this.offlineMode = offlineMode;
 
+        this.dbHandler = dbHandler;
     }
 
     @NonNull
@@ -186,7 +188,7 @@ public class ListAdapter extends BaseSelectableAdapter<ListAdapter.ProductHolder
             products.remove(product);
             deleteElement(selectedProductsPositions.get(i));
 
-            DBHandler.getInstance(activity.getApplicationContext()).deleteProduct(product, listId);
+            dbHandler.deleteProduct(product, listId);
             notifyItemRemoved(selectedProductsPositions.get(i));
         }
         notifyItemRangeChanged(0, products.size());
@@ -217,7 +219,7 @@ public class ListAdapter extends BaseSelectableAdapter<ListAdapter.ProductHolder
                     int productPosition = selectedProductsPositions.get(i);
                     products.add(productPosition, product);
                     addElement(productPosition, false);
-                    DBHandler.getInstance(activity.getApplicationContext()).insertProduct(product, listId);
+                    dbHandler.insertProduct(product, listId);
                     notifyItemInserted(productPosition);
                 }
 
@@ -305,8 +307,8 @@ public class ListAdapter extends BaseSelectableAdapter<ListAdapter.ProductHolder
 
 
 
-        DBHandler.getInstance(activity.getApplicationContext()).updateListNumberSelected(listId, isSelected);
-        DBHandler.getInstance(activity.getApplicationContext()).updateProduct(currentProduct);
+        dbHandler.updateListNumberSelected(listId, isSelected);
+        dbHandler.updateProduct(currentProduct);
         int from;
         int to;
         if(products.size() > 1)

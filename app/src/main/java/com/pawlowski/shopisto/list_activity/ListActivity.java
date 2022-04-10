@@ -97,7 +97,7 @@ public class ListActivity extends BaseActivity implements ListActivityViewMvc.Li
 
         boolean isOfflineMode = isOfflineModeOn();
 
-        adapter = new ListAdapter(this, listId, listKey, isOfflineMode);
+        adapter = new ListAdapter(this, listId, listKey, isOfflineMode, dbHandler);
         viewMvc.setRecyclerAdapter(adapter);
 
         viewMvc.hideEmptyListItems();

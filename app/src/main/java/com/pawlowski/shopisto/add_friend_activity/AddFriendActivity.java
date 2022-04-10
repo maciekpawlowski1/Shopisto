@@ -191,6 +191,6 @@ public class AddFriendActivity extends BaseActivity implements AddFriendViewMvc.
 
     @Override
     public void onUserNotFoundTextClick() {
-        ShareActivity.shareAction(listTittle, listId, AddFriendActivity.this);
+        ShareActivity.shareAction(listTittle, listId, AddFriendActivity.this, dbHandler);
     }
 }

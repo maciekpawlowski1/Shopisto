@@ -118,7 +118,7 @@ public class ShareActivity extends BaseActivity implements ShareActivityViewMvc.
 
 
 
-        adapter = new FriendsAdapter(this, listKey, amIOwner);
+        adapter = new FriendsAdapter(this, listKey, amIOwner, dbHandler);
         viewMvc.setAdapter(adapter);
     }
 
@@ -181,15 +181,15 @@ public class ShareActivity extends BaseActivity implements ShareActivityViewMvc.
 
     private void shareAction()
     {
-        shareAction(listTittle, listId, ShareActivity.this);
+        shareAction(listTittle, listId, ShareActivity.this, dbHandler);
     }
 
-    public static void shareAction(String listTittle, int listId, Activity activity)
+    public static void shareAction(String listTittle, int listId, Activity activity, DBHandler dbHandler)
     {
         Intent myIntent = new Intent(Intent.ACTION_SEND);
         myIntent.setType("text/plain");
 
-        List<ProductModel> products = DBHandler.getInstance(activity.getApplicationContext()).getAllProductOfList(listId);
+        List<ProductModel> products = dbHandler.getAllProductOfList(listId);
 
 
         String shareBody = getBody(products);
