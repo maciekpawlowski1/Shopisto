@@ -1,48 +1,31 @@
 package com.pawlowski.shopisto.account.login_activity;
 
-import androidx.annotation.NonNull;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
-import com.pawlowski.shopisto.base.BaseActivity;
+import com.pawlowski.shopisto.R;
+import com.pawlowski.shopisto.account.BaseLoginActivity;
 import com.pawlowski.shopisto.account.register_activity.RegisterActivity;
 import com.pawlowski.shopisto.account.reset_password_activity.ResetPasswordActivity;
+import com.pawlowski.shopisto.add_friend_activity.AddFriendActivity;
 import com.pawlowski.shopisto.database.DBHandler;
 import com.pawlowski.shopisto.database.OnlineDBHandler;
 import com.pawlowski.shopisto.main.MainActivity;
-import com.pawlowski.shopisto.R;
 
 import javax.inject.Inject;
 
-public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginButtonsClickListener {
+import androidx.annotation.NonNull;
 
-
-    private static final int RC_SIGN_IN = 51;
-    private static final String TAG = "sign_in_by_google";
-
+public class LoginActivity extends BaseLoginActivity implements LoginViewMvc.LoginButtonsClickListener {
     private LoginViewMvc viewMvc;
-    private GoogleSignInClient mGoogleSignInClient;
 
     @Inject
     DBHandler dbHandler;
@@ -65,8 +48,6 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
             MainActivity.resetListsTimestamp(LoginActivity.this);
             initGoogleLogin();
         }
-
-
     }
 
     @Override
@@ -90,119 +71,57 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
     }
 
 
-    
-    private void initGoogleLogin()
-    {
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-    }
-
-
-    private void signInByGoogle()
-    {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onGoogleAuthComplete(@NonNull Task<AuthResult> task) {
+        hideProgressDialog();
+        if (task.isSuccessful() && task.getResult().getUser() != null) {
+            // Sign in success, update UI with the signed-in user's information
+            Log.d(TAG, "signInWithCredential:success");
+            FirebaseUser user = task.getResult().getUser();
+            FirebaseDatabase.getInstance().goOnline();
+            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
+                    .child("mail").setValue(user.getEmail());
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if(result.isSuccess())
-            {
-                GoogleSignInAccount account = result.getSignInAccount();
-                firebaseAuthWithGoogle(account.getIdToken());
+            startMainActivityAfterLogin();
+
+        } else {
+            // If sign in fails, display a message to the user.
+            Log.w(TAG, "signInWithCredential:failure", task.getException());
+            try {
+                throw task.getException();
             }
-            else
+            catch (FirebaseAuthUserCollisionException collisionException)
             {
-                Log.w(TAG, "Google sign in failed");
+                showErrorSnackbar(getString(R.string.mail_already_in_use), true);
+            } catch (Exception e) {
                 showErrorSnackbar(getString(R.string.login_failed), true);
             }
+        }
+    }
 
+    @Override
+    protected void onSignInWithPasswordComplete(@NonNull Task<AuthResult> task) {
+        if(task.isSuccessful() && task.getResult().getUser() != null)
+        {
+            AuthResult authResult = task.getResult();
+            FirebaseDatabase.getInstance().goOnline();
+            FirebaseDatabase.getInstance().getReference().child("users").child(authResult.getUser().getUid())
+                    .child("mail").setValue(authResult.getUser().getEmail());
+
+
+            hideProgressDialog();
+            startMainActivityAfterLogin();
+        }
+        else
+        {
+            hideProgressDialog();
+            showErrorSnackbar(getString(R.string.wrong_sign_in), true);
+            viewMvc.changeClickableOfSignInButton(true);
         }
     }
 
 
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        showProgressDialog(getString(R.string.please_wait));
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        hideProgressDialog();
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            FirebaseDatabase.getInstance().goOnline();
-                            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid())
-                                    .child("mail").setValue(user.getEmail());
-
-                            startMainActivityAfterLogin();
-
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            try {
-                                throw task.getException();
-                            }
-                            catch (FirebaseAuthUserCollisionException collisionException)
-                            {
-                                showErrorSnackbar(getString(R.string.mail_already_in_use), true);
-                            } catch (Exception e) {
-                                //e.printStackTrace();
-                                showErrorSnackbar(getString(R.string.login_failed), true);
-                            }
-
-
-                            //updateUI(null);
-                        }
-                    }
-                });
-    }
-
-    void logInWithPassword(String userMail, String password)
-    {
-        String mail = userMail.trim();
-        //String password = userPassword.trim();
-        viewMvc.changeClickableOfSignInButton(false);
-        showProgressDialog(getString(R.string.please_wait));
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(mail, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-
-
-                FirebaseDatabase.getInstance().goOnline();
-                FirebaseDatabase.getInstance().getReference().child("users").child(authResult.getUser().getUid())
-                        .child("mail").setValue(authResult.getUser().getEmail());
-
-
-                hideProgressDialog();
-                startMainActivityAfterLogin();
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                hideProgressDialog();
-                showErrorSnackbar(getString(R.string.wrong_sign_in), true);
-                viewMvc.changeClickableOfSignInButton(true);
-            }
-        });
-
-    }
 
     void startMainActivityAfterLogin()
     {
@@ -214,8 +133,7 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
         }
         else
         {
-            Intent i = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(i);
+            MainActivity.launch(this);
         }
         finish();
     }
@@ -227,9 +145,9 @@ public class LoginActivity extends BaseActivity implements LoginViewMvc.LoginBut
         if(email.length() >= 3 && password.length() >= 5 && AddFriendActivity.isMailValid(email))
         {
             //Log in
-            //showProgressDialog(getString(R.string.please_wait));
+            showProgressDialog(getString(R.string.please_wait));
+            viewMvc.changeClickableOfSignInButton(false);
             logInWithPassword(email, password);
-            //hideProgressDialog();
         }
         else
         {
